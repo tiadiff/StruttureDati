@@ -1,4 +1,4 @@
-# 📘 Visualizzatore di Strutture Dati in JavaScript
+# 📘 Visualizzatore di Strutture Dati
 
 Questo progetto è uno strumento didattico avanzato per l'apprendimento delle strutture dati lineari. A differenza di un semplice tutorial, questa applicazione implementa da zero le classi fondamentali (`LinkedList`, `DoublyLinkedList`, `Stack`, `Queue`) e ne visualizza il comportamento in tempo reale, offrendo un log dettagliato delle operazioni sui puntatori.
 
