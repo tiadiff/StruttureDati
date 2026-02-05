@@ -64,3 +64,90 @@ In algoritmi come la BFS (Breadth First Search) sui grafi, se rimetti in coda un
 In JavaScript, usare un Array `[]` come coda (`push` + `shift`) è funzionale ma lento su grandi numeri.
 `shift()` (rimuovi il primo) costringe JS a spostare tutti gli indici dell'array: costo **O(N)**.
 La Lista Linkata fa la stessa operazione in **O(1)**.
+
+---
+
+## 6. Applicazioni Pratiche della Coda
+
+### A. Coda di Stampa
+Quando invii 5 documenti alla stampante, vengono messi in coda.
+Il primo documento inviato viene stampato per primo (FIFO).
+
+### B. Breadth First Search (BFS) - Ricerca in Ampiezza
+Algoritmo fondamentale per esplorare grafi e alberi "livello per livello".
+```javascript
+function BFS(grafo, nodoPartenza) {
+    let visitati = new Set();
+    let coda = new Coda();
+    
+    coda.enqueue(nodoPartenza);
+    visitati.add(nodoPartenza);
+    
+    while (!coda.isEmpty()) {
+        let nodo = coda.dequeue();
+        console.log("Visito:", nodo);
+        
+        for (let vicino of grafo.getVicini(nodo)) {
+            if (!visitati.has(vicino)) {
+                visitati.add(vicino);
+                coda.enqueue(vicino);
+            }
+        }
+    }
+}
+```
+
+### C. Task Scheduler (Pianificatore di Processi)
+Il sistema operativo mette i processi in una coda. La CPU li esegue uno alla volta nell'ordine di arrivo (Round Robin semplificato).
+
+---
+
+## 7. Implementazione Completa in JavaScript (dal nostro progetto)
+
+Dal file `strutture_derivate.js`:
+```javascript
+class Coda {
+    constructor() {
+        this.list = new Lista(); // Usa la lista come "motore"
+    }
+
+    enqueue(info) {
+        console.log(`[QUEUE] Enqueue: ${info}`);
+        this.list.pushCoda(info); // Inserisce in fondo
+    }
+
+    dequeue() {
+        console.log(`[QUEUE] Dequeue`);
+        return this.list.popTesta(); // Rimuove dalla testa
+    }
+
+    front() {
+        if (this.list.isEmpty()) return null;
+        return this.list.head.info;
+    }
+
+    isEmpty() {
+        return this.list.isEmpty();
+    }
+
+    clear() {
+        this.list.clearList();
+    }
+
+    // Getter per accedere alla head (per visualizzazione)
+    get head() {
+        return this.list.head;
+    }
+}
+```
+
+---
+
+## 8. Tabella Riassuntiva delle Complessità
+
+| Operazione | Lista Senza Tail | Lista Con Tail | Array JS (`shift`) |
+| :--------- | :--------------- | :------------- | :----------------- |
+| `enqueue`  | O(N)             | O(1) ✓         | O(1)               |
+| `dequeue`  | O(1)             | O(1)           | O(N) ✗             |
+| `front`    | O(1)             | O(1)           | O(1)               |
+

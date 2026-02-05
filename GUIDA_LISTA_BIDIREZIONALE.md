@@ -99,3 +99,83 @@ Quando fai `pushTesta`, la vecchia testa diventa il secondo nodo. Devi ricordart
 ### C. Disconnessione "Zombie"
 Se rimuovi un nodo ma non aggiorni entrambi i lati (es. aggiorni solo il next del precedente ma non il prev del successivo), la lista diventa inconsistente se percorsa al contrario.
 *Test*: Scorrere sempre la lista in entrambe le direzioni dopo una modifica complessa.
+
+---
+
+## 6. PopCoda in O(1) - Il Vantaggio della Lista Bidirezionale
+
+Nella lista unidirezionale, `popCoda` costa O(N) perché devi trovare il penultimo.
+Nella bidirezionale, se mantieni un puntatore `tail`, la rimozione è **istantanea**.
+
+### Algoritmo con Tail
+```javascript
+popCoda() {
+    if (!this.tail) return null;
+    
+    let dato = this.tail.info;
+    this.tail = this.tail.prev; // Torna indietro di uno
+    
+    if (this.tail) {
+        this.tail.next = null;  // Sgancio il vecchio ultimo
+    } else {
+        this.head = null;       // Era l'unico nodo
+    }
+    return dato;
+}
+```
+
+---
+
+## 7. Diagramma Completo: Inserimento nel Mezzo
+
+Vogliamo inserire `N` tra `P` (precedente) e `S` (successivo).
+```
+PRIMA:
+  [P] <-----> [S]
+       prev/next
+
+DOPO:
+  [P] <-----> [N] <-----> [S]
+
+4 PUNTATORI DA AGGIORNARE:
+  1. N.prev = P
+  2. N.next = S
+  3. P.next = N   (se P esiste)
+  4. S.prev = N   (se S esiste)
+```
+
+### Codice JavaScript completo
+```javascript
+insertAfter(target, nuovoValore) {
+    let tmp = this.head;
+    while (tmp && tmp.info !== target) tmp = tmp.next;
+    if (!tmp) return; // Target non trovato
+    
+    const N = new NodoBi(nuovoValore);
+    const S = tmp.next; // Il successivo di target
+    
+    // Collegamenti di N
+    N.prev = tmp;
+    N.next = S;
+    
+    // Aggiornamento dei vicini
+    tmp.next = N;
+    if (S) S.prev = N;
+}
+```
+
+---
+
+## 8. Tabella Riassuntiva delle Complessità
+
+| Operazione         | Con Head  | Con Head+Tail |
+| :----------------- | :-------- | :------------ |
+| `pushTesta`        | O(1)      | O(1)          |
+| `pushCoda`         | O(N)      | O(1) ✓        |
+| `popTesta`         | O(1)      | O(1)          |
+| `popCoda`          | O(N)      | O(1) ✓        |
+| `deleteNodo(X)`    | O(1)*     | O(1)*         |
+| `search`           | O(N)      | O(N/2) media  |
+
+\* Se abbiamo già il puntatore al nodo X.
+

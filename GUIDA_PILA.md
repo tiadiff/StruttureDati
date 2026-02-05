@@ -65,3 +65,70 @@ Tentazione: "Voglio l'elemento che sta sotto al primo".
 
 ### C. Pattern Ricorsivi
 Quando usi uno stack per sostituire la ricorsione (es. DFS in un grafo), assicurati di inserire i nodi nell'ordine corretto, altrimenti li visiterai al contrario rispetto alla ricorsione standard.
+
+---
+
+## 6. Applicazioni Pratiche dello Stack
+
+### A. Undo/Redo negli Editor
+Ogni azione dell'utente (es. digitare, cancellare) viene pushata nello stack.
+*   **Ctrl+Z (Undo)**: `pop()` dall'UndoStack, `push()` nel RedoStack.
+*   **Ctrl+Y (Redo)**: `pop()` dal RedoStack, `push()` nell'UndoStack.
+
+### B. Valutazione di Espressioni (Calcolatrici)
+Le calcolatrici HP usano la "Notazione Polacca Inversa" (RPN).
+*   Espressione: `3 4 + 5 *` significa `(3 + 4) * 5`
+*   Algoritmo:
+    1.  Vedo 3 → Push(3). Stack: [3]
+    2.  Vedo 4 → Push(4). Stack: [3, 4]
+    3.  Vedo + → Pop due volte (4, 3), calcolo 3+4=7, Push(7). Stack: [7]
+    4.  Vedo 5 → Push(5). Stack: [7, 5]
+    5.  Vedo * → Pop due volte (5, 7), calcolo 7*5=35, Push(35). Stack: [35]
+    6.  Fine → Risultato = Pop() = 35.
+
+### C. Verifica Parentesi Bilanciate
+Problema classico: verificare che `((a+b) * (c-d))` abbia le parentesi corrette.
+*   Ad ogni `(` → Push.
+*   Ad ogni `)` → Pop. Se lo stack è vuoto quando provi a fare pop, o se alla fine non è vuoto → Errore.
+
+---
+
+## 7. Implementazione Completa in JavaScript (dal nostro progetto)
+
+Dal file `strutture_derivate.js`:
+```javascript
+class Pila {
+    constructor() {
+        this.list = new Lista(); // Usa la lista come "motore"
+    }
+
+    push(info) {
+        console.log(`[STACK] Push: ${info}`);
+        this.list.pushTesta(info);
+    }
+
+    pop() {
+        console.log(`[STACK] Pop`);
+        return this.list.popTesta();
+    }
+
+    peek() {
+        if (this.list.isEmpty()) return null;
+        return this.list.head.info;
+    }
+
+    isEmpty() {
+        return this.list.isEmpty();
+    }
+
+    clear() {
+        this.list.clearList();
+    }
+
+    // Getter per accedere alla head (per visualizzazione)
+    get head() {
+        return this.list.head;
+    }
+}
+```
+

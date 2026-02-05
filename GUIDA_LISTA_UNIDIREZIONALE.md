@@ -107,3 +107,73 @@ Verifica sempre se il tuo codice funziona con:
 *   Lista vuota.
 *   Lista con 1 solo nodo.
 *   Operazione sull'ultimo nodo (cancellazione della coda).
+
+---
+
+## 7. Rimozione dalla Coda (PopCoda) - Algoritmo Dettagliato
+
+Rimuovere l'ultimo elemento è più complesso che rimuovere il primo, perché dobbiamo fermarci al **penultimo** nodo.
+
+### Algoritmo passo-passo
+```javascript
+popCoda() {
+    if (this.isEmpty()) return null;
+    
+    // Caso speciale: un solo nodo
+    if (this.head.link === null) {
+        let dato = this.head.info;
+        this.head = null;
+        return dato;
+    }
+    
+    // Caso generale: scorri fino al PENULTIMO
+    let tmp = this.head;
+    while (tmp.link.link !== null) { // Controllo due passi avanti!
+        tmp = tmp.link;
+    }
+    
+    // tmp è ora il penultimo. tmp.link è l'ultimo.
+    let dato = tmp.link.info;
+    tmp.link = null; // Sgancio l'ultimo
+    return dato;
+}
+```
+
+### Perché `tmp.link.link`?
+Se usassi solo `tmp.link !== null`, mi fermerei sull'ultimo nodo. Ma a quel punto non avrei modo di "sganciarlo" perché non ho accesso al penultimo per modificare il suo `.link`.
+
+---
+
+## 8. Gestione della Memoria (Garbage Collection in JavaScript)
+
+JavaScript non richiede la liberazione manuale della memoria (a differenza di C con `free()`).
+
+### Come funziona
+Quando un nodo non è più raggiungibile (nessuna variabile punta ad esso), il **Garbage Collector** del browser lo marca come "spazzatura" e libera la RAM.
+
+**Esempio**:
+```javascript
+popTesta() {
+    let vecchioHead = this.head;
+    this.head = this.head.link; // La testa avanza
+    vecchioHead.link = null;    // "Pulisco" il vecchio nodo (opzionale ma buona pratica)
+    return vecchioHead.info;
+}
+```
+Dopo queste righe, `vecchioHead` non è più puntato da nessuno → verrà eliminato automaticamente.
+
+---
+
+## 9. Tabella Riassuntiva delle Complessità
+
+| Operazione       | Complessità | Note                                      |
+| :--------------- | :---------- | :---------------------------------------- |
+| `pushTesta`      | O(1)        | Immediato, non scorre                     |
+| `pushCoda`       | O(N)        | Deve scorrere fino alla fine              |
+| `pushDopoNodo`   | O(N)        | Cerca il target, poi O(1) per inserire    |
+| `popTesta`       | O(1)        | Immediato, aggiorna solo head             |
+| `popCoda`        | O(N)        | Deve trovare il penultimo                 |
+| `search`         | O(N)        | Caso peggiore: elemento non presente      |
+| `size`           | O(N)        | Conta tutti i nodi (o O(1) con contatore) |
+| `reverse`        | O(N)        | Attraversa la lista una volta             |
+
