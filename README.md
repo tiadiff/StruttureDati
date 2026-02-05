@@ -1,116 +1,128 @@
-# Visualizzatore di Strutture Dati in JavaScript
+# 📘 Visualizzatore di Strutture Dati in JavaScript
 
-Questo progetto è uno strumento didattico interattivo progettato per visualizzare e comprendere il funzionamento interno delle principali strutture dati lineari: **Lista Unidirezionale**, **Lista Bidirezionale**, **Pila (Stack)** e **Coda (Queue)**.
+Questo progetto è uno strumento didattico avanzato per l'apprendimento delle strutture dati lineari. A differenza di un semplice tutorial, questa applicazione implementa da zero le classi fondamentali (`LinkedList`, `DoublyLinkedList`, `Stack`, `Queue`) e ne visualizza il comportamento in tempo reale, offrendo un log dettagliato delle operazioni sui puntatori.
 
-L'applicazione mostra graficamente i nodi e i collegamenti (puntatori) e fornisce un log dettagliato degli algoritmi eseguiti passo dopo passo.
-
-## 📂 Struttura del Progetto
-
-Il codice è suddiviso in moduli per separare logicamente le diverse implementazioni:
-
-*   **`index.html`**: L'interfaccia utente unificata (SPA) che gestisce la navigazione a schede (Tabs) e la visualizzazione grafica.
-*   **`lista.js`**: Implementazione della **Lista Unidirezionale**.
-*   **`lista_bidirezionale.js`**: Implementazione della **Lista Bidirezionale**.
-*   **`strutture_derivate.js`**: Contiene le classi **Pila** e **Coda**, che agiscono come *wrapper* (involucri) attorno alle liste per imporre vincoli LIFO e FIFO.
+Repo GitHub: [tiadiff/StruttureDati](https://github.com/tiadiff/StruttureDati)
 
 ---
 
-## 1. Lista Unidirezionale (`Lista`)
+# 1. 🔗 Lista Unidirezionale (Singly Linked List)
 
-La struttura di base. Ogni nodo contiene un dato e un riferimento al nodo successivo.
+La struttura dati fondamentale. È una sequenza di nodi in cui ogni nodo conosce solo il suo successore.
 
-### Classe `Nodo`
-```javascript
-class Nodo {
-    constructor(info) {
-        this.info = info; // Il dato (es. numero o stringa)
-        this.link = null; // Il PUNTATORE al prossimo nodo
-    }
-}
-```
+### Struttura del Nodo
+Ogni `Nodo` è un oggetto composto da:
+*   `info`: Il dato vero e proprio.
+*   `link`: Un **puntatore** (riferimento di memoria) al prossimo nodo. Se è l'ultimo nodo, `link` è `null`.
 
-### Algoritmi Principali
+### 🧠 Algoritmi e Gestione Puntatori
 
-#### Inserimento in Testa (`pushTesta`)
-Inserisce un nuovo nodo all'inizio della lista. Complessità: **O(1)**.
-1.  Si crea il nuovo nodo `n`.
-2.  Si collega `n.link` all'attuale `head` (il nuovo nodo punta al vecchio primo).
-3.  Si aggiorna `head` affinché punti a `n`.
+#### A. Inserimento in Testa (`pushTesta`)
+*Complessità: O(1)*
+Inseriamo un nodo `N` prima dell'attuale `head`.
+1.  Creo `N`.
+2.  **Collegamento**: `N.link = head`. (Il nuovo nodo punta a quello che *era* il primo).
+3.  **Aggiornamento**: `head = N`. (Il sistema riconosce `N` come nuovo inizio).
 
-#### Inserimento in Coda (`pushCoda`)
-Inserisce un nuovo nodo alla fine. Complessità: **O(N)** (perché dobbiamo scorrere tutta la lista).
-1.  Se la lista è vuota, `head = n`.
-2.  Altrimenti, si scorre con un puntatore temporaneo `tmp` finché `tmp.link` non è `null` (ultimo nodo).
-3.  Si collega l'ultimo nodo al nuovo: `tmp.link = n`.
+#### B. Inserimento in Coda (`pushCoda`)
+*Complessità: O(N)*
+Dobbiamo trovare l'ultimo nodo per fargli puntare il nuovo.
+1.  Se `head` è `null`, diventa `head = N`.
+2.  Altrimenti, creo un puntatore temporaneo `tmp = head`.
+3.  **Traversamento**: Eseguo `tmp = tmp.link` finché `tmp.link` non è `null`.
+4.  **Collegamento**: `tmp.link = N`. (L'ex ultimo nodo ora punta a `N`).
 
-#### Inserimento dopo un Nodo (`pushDopoNodo`)
-Inserisce `n` tra un nodo `A` (target) e il suo successivo `B`.
-1.  Si cerca il nodo target con un ciclo.
-2.  **Gestione Puntatori**:
-    *   `n.link = tmp.link` (Il nuovo nodo punta a B).
-    *   `tmp.link = n` (Il nodo A punta al nuovo nodo).
-    *   *Ordine critico*: Se facessimo il contrario, perderemmo il riferimento a B!
+#### C. Inserimento "Dopo" un Nodo (`pushDopoNodo`)
+Vogliamo inserire `N` tra `A` (target) e `B` (il successivo di A).
+**Logica Puntatori:**
+1.  Scorro la lista con `tmp` fino a trovare `A`.
+2.  **Puntatore 1**: `N.link = tmp.link` (Collego `N` a `B`).
+    *   *Nota*: Se facessi prima il passo 3, perderei per sempre il riferimento a `B`!
+3.  **Puntatore 2**: `tmp.link = N` (Collego `A` a `N`).
 
 ---
 
-## 2. Lista Bidirezionale (`ListaBi`)
+# 2. ↔️ Lista Bidirezionale (Doubly Linked List)
 
-Ogni nodo ha **due** puntatori: uno al successivo (`next`) e uno al precedente (`prev`). Questo permette di scorrere la lista in entrambe le direzioni.
+Più flessibile ma complessa: ogni nodo ha **due** puntatori. Questo permette di "tornare indietro" ma richiede doppia manutenzione ad ogni modifica.
 
-### Classe `NodoBi`
-```javascript
-class NodoBi {
-    constructor(info) {
-        this.info = info;
-        this.prev = null; // Puntatore al nodo precedente
-        this.next = null; // Puntatore al nodo successivo
-    }
-}
-```
+### Struttura del NodoBi
+*   `info`: Dato.
+*   `prev`: Puntatore al nodo precedente (`null` se è la testa).
+*   `next`: Puntatore al nodo successivo (`null` se è la coda).
 
-### Gestione dei Doppi Puntatori
+### 🧠 Algoritmi e Gestione Puntatori
 
-#### Inserimento in Testa
-1.  `n.next = head` (Il nuovo punta al vecchio primo).
-2.  `head.prev = n` (Il vecchio primo punta indietro al nuovo). **Critico**: Va fatto solo se la lista non era vuota.
-3.  `head = n`.
+#### A. Inserimento in Testa
+1.  Creo `N`.
+2.  `N.next = head`.
+3.  **Retro-link**: Se la lista non era vuota (`head != null`), imposto `head.prev = N`. Questo è il passo fondamentale che manca nella lista unidirezionale.
+4.  `head = N`.
+5.  `N.prev` nasce già `null`, corretto per la nuova testa.
 
-#### Rimozione (es. `popDopoNodo`)
-Per rimuovere un nodo `X` che si trova tra `A` e `B`:
-1.  `A.next = B` (A salta X e punta a B).
-2.  `B.prev = A` (B punta indietro ad A, saltando X).
-3.  Si rimuovono i collegamenti di X (`X.prev = null`, `X.next = null`) per pulizia.
+#### B. Inserimento "Prima" di un Nodo (`pushPrimaNodo`)
+Vogliamo inserire `N` prima di un nodo `T` (Target). Supponiamo che prima di `T` ci sia `P` (Precedente).
+Configurazione Iniziale: `P <-> T`
+Obiettivo: `P <-> N <-> T`
 
----
+**Logica Puntatori:**
+1.  Trovo `T` scorrendo.
+2.  Identifico `P` come `T.prev`.
+3.  **Collegamenti di N**:
+    *   `N.next = T`
+    *   `N.prev = P`
+4.  **Aggiornamento Vicini**:
+    *   `T.prev = N` (Il target ora punta indietro a N).
+    *   Se `P` esiste (non eravamo in testa), `P.next = N` (Il precedente punta avanti a N).
+    *   Se `P` non esiste, significa che `T` era la testa, quindi aggiorno `head = N`.
 
-## 3. Pila (Stack)
-
-Struttura dati **LIFO** (*Last In, First Out* - Primo a Entrare, Ultimo a Uscire). Immagina una pila di piatti.
-
-### Implementazione (`Pila` in `strutture_derivate.js`)
-Abbiamo usato il pattern **Composition**: la classe `Pila` possiede internamente una istanza di `Lista`, ma espone solo i metodi permessi.
-
-*   **PUSH**: Chiama internamente `lista.pushTesta()`. Inserisce sempre in cima.
-*   **POP**: Chiama internamente `lista.popTesta()`. Rimuove sempre dalla cima.
-*   **Accesso Limitato**: Non è possibile inserire/rimuovere nel mezzo o in coda.
-
----
-
-## 4. Coda (Queue)
-
-Struttura dati **FIFO** (*First In, First Out* - Primo a Entrare, Primo a Uscire). Come una fila alla cassa.
-
-### Implementazione (`Coda` in `strutture_derivate.js`)
-Anche qui usiamo un wrapper attorno a `Lista` o `ListaBi`.
-
-*   **ENQUEUE** (Accoda): Chiama `lista.pushCoda()`. Il nuovo elemento va in fondo alla fila.
-*   **DEQUEUE** (Servi): Chiama `lista.popTesta()`. L'elemento servito è quello che aspettava da più tempo (la testa).
+#### C. Rimozione di un Nodo Centrale
+Per rimuovere un nodo `X` situato tra `A` e `B` (`A <-> X <-> B`):
+1.  **Bypass in Avanti**: `A.next = B`. (A punta direttamente a B).
+2.  **Bypass all'Indietro**: `B.prev = A`. (B punta direttamente ad A).
+3.  *Pulizia*: `X.next = null`, `X.prev = null` (Per aiutare il Garbage Collector).
 
 ---
 
-## Guida all'Uso
-1.  Apri il file **`index.html`** nel browser.
-2.  Usa le **Tabs** in alto per cambiare struttura.
-3.  Usa i campi **Valore** e **Target** per specificare i dati.
-4.  Osserva il pannello **Visualizzazione** per vedere i nodi graficamente.
-5.  Leggi la **Console Algoritmo** in basso per seguire passo-passo cosa fa il codice JavaScript (es. "Creo puntatore tmp", "Aggiorno link"). Ororo
+# 3. 📚 Pila (Stack) - LIFO
+
+Struttura **Last In, First Out** (Ultimo dentro, Primo fuori). È concettualmente una "pila di piatti".
+
+### Implementazione Logica
+Sebbene usiamo internamente una lista, l'interfaccia della classe `Pila` (in `strutture_derivate.js`) blocca qualsiasi operazione che non sia sulla cima (Testa).
+
+*   **Algoritmo Push**: È esattamente una `pushTesta`. Non scorriamo mai la lista. O(1).
+*   **Algoritmo Pop**: È esattamente una `popTesta`. Rimuove l'ultimo elemento inserito. O(1).
+*   *Vincolo*: Non è fisicamente possibile accedere o rimuovere elementi dal fondo o dal centro senza rimuovere prima tutti quelli sopra.
+
+---
+
+# 4. 🚶 Coda (Queue) - FIFO
+
+Struttura **First In, First Out** (Primo dentro, Primo fuori). È come una fila alla posta.
+
+### Implementazione Logica
+Usiamo una lista imponendo vincoli opposti allo Stack.
+
+*   **Algoritmo Enqueue (Accoda)**:
+    *   È una `pushCoda`.
+    *   Si scorre la lista fino all'ultimo nodo e si aggancia il nuovo.
+    *   *Complessità*: O(N) nella nostra implementazione didattica (in produzione si manterrebbe un puntatore `user_tail` per farlo in O(1)).
+*   **Algoritmo Dequeue (Servi)**:
+    *   È una `popTesta`.
+    *   Si preleva l'elemento che è nella lista da più tempo (la testa).
+    *   Il puntatore `head` avanza al secondo elemento (`head = head.link`).
+
+---
+
+## 🛠 Istruzioni per l'Esecuzione Locale
+
+Poiché il progetto utilizza solo HTML, CSS e JavaScript standard (senza framework o compilatori), è eseguibile immediatamente:
+
+1.  Clona il repository (o scarica lo ZIP).
+2.  Apri il file **`index.html`** con un qualsiasi browser moderno (Chrome, Firefox, Safari).
+3.  Non è necessario alcun server locale (Node.js, Apache, ecc.).
+
+---
+
+*Progetto sviluppato a scopo didattico per l'analisi approfondita delle strutture dati in memoria.*
