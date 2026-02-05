@@ -151,3 +151,110 @@ class Coda {
 | `dequeue`  | O(1)             | O(1)           | O(N) ✗             |
 | `front`    | O(1)             | O(1)           | O(1)               |
 
+---
+
+## 9. 🎨 Diagrammi ASCII: Visualizzazione della Coda
+
+### Rappresentazione Orizzontale (Classica)
+```
+DEQUEUE                                                  ENQUEUE
+(esce)                                                   (entra)
+   ↓                                                        ↓
++-----+    +-----+    +-----+    +-----+    +-----+
+| A   |--->| B   |--->| C   |--->| D   |--->| E   |---> NULL
++-----+    +-----+    +-----+    +-----+    +-----+
+   ^                                            ^
+ FRONT                                        REAR
+ (Testa)                                     (Coda)
+```
+
+### Operazione ENQUEUE("F")
+```
+PRIMA:
+FRONT --> [A] --> [B] --> [C] --> [D] --> [E] --> NULL
+                                            ^
+                                          REAR
+
+DOPO:
+FRONT --> [A] --> [B] --> [C] --> [D] --> [E] --> [F] --> NULL
+                                                    ^
+                                                  REAR (nuovo)
+```
+
+### Operazione DEQUEUE()
+```
+PRIMA:
+FRONT --> [A] --> [B] --> [C] --> ...
+            ^
+          (esce)
+
+DOPO:
+          [A] (isolato, va al GC)
+
+FRONT --> [B] --> [C] --> ...
+            ^
+          (nuovo front)
+
+Ritorna: "A"
+```
+
+---
+
+## 10. 🔧 Pattern Avanzati con la Coda
+
+### Livellamento di un Albero (Level Order Traversal)
+```javascript
+function stampaPerlLivelli(radice) {
+    let coda = new Coda();
+    coda.enqueue(radice);
+    
+    while (!coda.isEmpty()) {
+        let nodo = coda.dequeue();
+        console.log(nodo.valore);
+        
+        if (nodo.sinistro) coda.enqueue(nodo.sinistro);
+        if (nodo.destro) coda.enqueue(nodo.destro);
+    }
+}
+```
+
+### Simulazione di una Cassa del Supermercato
+```javascript
+function simulaCassa(clienti, tempoServizio) {
+    let coda = new Coda();
+    for (let cliente of clienti) coda.enqueue(cliente);
+    
+    let tempo = 0;
+    while (!coda.isEmpty()) {
+        let cliente = coda.dequeue();
+        console.log(`Tempo ${tempo}: Servo ${cliente}`);
+        tempo += tempoServizio;
+    }
+    console.log(`Tutti serviti in ${tempo} minuti`);
+}
+```
+
+---
+
+## 11. 📋 Particolarità della Coda
+
+### Caratteristiche Uniche
+1.  **Ordine FIFO garantito**: Chi entra prima, esce prima. Equità!
+2.  **Due estremità attive**: Una per entrare (rear), una per uscire (front).
+3.  **Naturale per processi sequenziali**: Richieste web, stampe, task.
+
+### Quando usare la Coda?
+*   Gestione richieste in un server (load balancing).
+*   Esplorazione BFS di grafi e alberi.
+*   Simulazioni (code ai caselli, ospedali).
+*   Buffer di messaggi tra componenti software.
+
+### Quando NON usare la Coda?
+*   Se l'ultimo arrivato ha priorità (usa Stack).
+*   Se alcuni elementi hanno priorità diverse (usa Priority Queue).
+*   Se devi cercare un elemento specifico (usa Lista o Set).
+
+### Trucco per Debug
+Se la tua coda non si svuota mai, probabilmente stai ri-accodando elementi già processati. Aggiungi sempre un `Set` di "visitati" quando usi code per algoritmi di ricerca.
+
+

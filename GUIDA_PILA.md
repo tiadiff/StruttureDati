@@ -132,3 +132,108 @@ class Pila {
 }
 ```
 
+---
+
+## 8. 🎨 Diagrammi ASCII: Visualizzazione dello Stack
+
+### Rappresentazione Verticale (Classica)
+```
+         +-------+
+ TOP --> |   C   |  <-- Ultimo inserito, primo a uscire
+         +-------+
+         |   B   |
+         +-------+
+         |   A   |  <-- Primo inserito, ultimo a uscire
+         +-------+
+         | FONDO |
+         +-------+
+```
+
+### Operazione PUSH("D")
+```
+PRIMA:                      DOPO:
++-------+                   +-------+
+|   C   | <-- TOP           |   D   | <-- TOP (nuovo)
++-------+                   +-------+
+|   B   |                   |   C   |
++-------+                   +-------+
+|   A   |                   |   B   |
++-------+                   +-------+
+                            |   A   |
+                            +-------+
+```
+
+### Operazione POP()
+```
+PRIMA:                      DOPO:
++-------+                   +-------+
+|   D   | <-- TOP (esce!)   |   C   | <-- TOP (nuovo)
++-------+                   +-------+
+|   C   |                   |   B   |
++-------+                   +-------+
+|   B   |                   |   A   |
++-------+                   +-------+
+|   A   |                   
++-------+                   Ritorna: "D"
+```
+
+---
+
+## 9. 🔧 Pattern Avanzati con lo Stack
+
+### Inversione di una Stringa
+```javascript
+function inverti(stringa) {
+    let stack = new Pila();
+    for (let char of stringa) stack.push(char);
+    
+    let risultato = "";
+    while (!stack.isEmpty()) risultato += stack.pop();
+    
+    return risultato;
+}
+inverti("HELLO") // → "OLLEH"
+```
+
+### Conversione da Ricorsione a Iterazione
+Ogni funzione ricorsiva può essere riscritta con uno Stack esplicito.
+```javascript
+// Ricorsivo (usa Call Stack implicito)
+function fattoriale(n) {
+    if (n <= 1) return 1;
+    return n * fattoriale(n - 1);
+}
+
+// Iterativo con Stack esplicito
+function fattorialeIterativo(n) {
+    let stack = [];
+    while (n > 1) { stack.push(n); n--; }
+    
+    let risultato = 1;
+    while (stack.length > 0) risultato *= stack.pop();
+    
+    return risultato;
+}
+```
+
+---
+
+## 10. 📋 Particolarità dello Stack
+
+### Caratteristiche Uniche
+1.  **Accesso limitato**: Solo la cima è visibile. Questo è un *vincolo*, non un difetto.
+2.  **Ordine LIFO garantito**: Nessun modo di "barare" e accedere al fondo.
+3.  **Operazioni O(1)**: Push, Pop, Peek sono tutte istantanee.
+
+### Quando usare lo Stack?
+*   Undo/Redo in applicazioni.
+*   Parsing di espressioni matematiche.
+*   Backtracking (labirinti, Sudoku solver).
+*   Gestione della chiamata di funzioni (Call Stack).
+
+### Quando NON usare lo Stack?
+*   Se hai bisogno di accedere a elementi nel mezzo.
+*   Se l'ordine di uscita deve essere FIFO (usa una Coda).
+*   Se devi cercare un elemento specifico (usa una Lista o Set).
+
+

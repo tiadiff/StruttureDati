@@ -177,3 +177,106 @@ Dopo queste righe, `vecchioHead` non è più puntato da nessuno → verrà elimi
 | `size`           | O(N)        | Conta tutti i nodi (o O(1) con contatore) |
 | `reverse`        | O(N)        | Attraversa la lista una volta             |
 
+---
+
+## 10. 🎨 Diagrammi ASCII: Visualizzazione delle Operazioni
+
+### Inserimento in Testa (pushTesta)
+```
+STATO INIZIALE:
+  HEAD --> [A|•]--> [B|•]--> [C|∅]
+  
+OPERAZIONE: pushTesta("X")
+
+PASSO 1: Creo nodo X
+  [X|?]   HEAD --> [A|•]--> [B|•]--> [C|∅]
+
+PASSO 2: X.link = HEAD (X punta ad A)
+  [X|•]----------> [A|•]--> [B|•]--> [C|∅]
+         HEAD -----^
+
+PASSO 3: HEAD = X
+  HEAD --> [X|•]--> [A|•]--> [B|•]--> [C|∅]
+```
+
+### Inserimento Centrale (pushDopoNodo)
+```
+STATO INIZIALE: Inserire "N" dopo "A"
+  HEAD --> [A|•]--> [B|•]--> [C|∅]
+
+ERRORE COMUNE (ordine sbagliato):
+  A.link = N  PRIMA di salvare B
+  HEAD --> [A|•]--> [N|?]    [B|•]--> [C|∅]  <-- B È PERSO!
+
+ORDINE CORRETTO:
+  Passo 1: N.link = A.link (cioè N punta a B)
+  Passo 2: A.link = N
+  
+  HEAD --> [A|•]--> [N|•]--> [B|•]--> [C|∅]
+```
+
+### Rimozione dalla Coda (popCoda)
+```
+STATO INIZIALE:
+  HEAD --> [A|•]--> [B|•]--> [C|∅]
+                     ^
+                    tmp (penultimo)
+
+OPERAZIONE:
+  tmp.link = null
+  
+RISULTATO:
+  HEAD --> [A|•]--> [B|∅]    [C] (isolato, verrà raccolto dal GC)
+```
+
+---
+
+## 11. 🔧 Gestione Avanzata dei Puntatori
+
+### Il Puntatore Temporaneo (tmp)
+In molte operazioni usiamo una variabile `tmp` per scorrere la lista senza perdere `head`.
+
+**Regola d'oro**: MAI modificare `head` durante lo scorrimento!
+```javascript
+// ❌ SBAGLIATO
+while (head !== null) {
+    head = head.link; // Stai spostando head! Perderai la lista!
+}
+
+// ✅ CORRETTO
+let tmp = head;
+while (tmp !== null) {
+    tmp = tmp.link; // Modifichi solo tmp
+}
+```
+
+### Controllo Preventivo (Guard Clause)
+Prima di accedere a `.link` o `.info`, verifica sempre che il nodo esista:
+```javascript
+// ❌ Potenziale crash
+if (tmp.link.info === target) { ... }
+
+// ✅ Sicuro
+if (tmp.link && tmp.link.info === target) { ... }
+```
+
+---
+
+## 12. 📋 Particolarità della Lista Unidirezionale
+
+### Vantaggi
+1.  **Semplicità**: Struttura minimale, facile da capire e implementare.
+2.  **Memoria efficiente**: Solo un puntatore per nodo.
+3.  **Inserimento in testa O(1)**: Operazione instantanea.
+
+### Svantaggi
+1.  **Nessun accesso diretto**: Per raggiungere il nodo N, devi partire da head e scorrere N-1 nodi.
+2.  **Rimozione dalla coda costosa**: Devi trovare il penultimo → O(N).
+3.  **Nessun ritorno**: Non puoi tornare al nodo precedente una volta passato.
+
+### Quando usarla?
+*   Code di esecuzione semplici (i task vengono processati dalla testa).
+*   Implementazione di Stack (solo push/pop in testa).
+*   Quando la memoria è critica (meno overhead rispetto alla bidirezionale).
+
+

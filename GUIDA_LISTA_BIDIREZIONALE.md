@@ -179,3 +179,103 @@ insertAfter(target, nuovoValore) {
 
 \* Se abbiamo già il puntatore al nodo X.
 
+---
+
+## 9. 🎨 Diagrammi ASCII: Doppi Pointer in Azione
+
+### Struttura Base
+```
+        prev    next          prev    next          prev    next
+  NULL <---- [A] ----> <---- [B] ----> <---- [C] ----> NULL
+              ^                                 ^
+             HEAD                             (TAIL)
+```
+
+### Inserimento in Testa
+```
+STATO INIZIALE:
+  NULL <-- [A] <--> [B] <--> [C] --> NULL
+            ^
+           HEAD
+
+OPERAZIONE: pushTesta("X")
+
+PASSO 1: X.next = HEAD (X punta avanti ad A)
+PASSO 2: HEAD.prev = X (A punta indietro a X) ← FONDAMENTALE!
+PASSO 3: HEAD = X
+
+RISULTATO:
+  NULL <-- [X] <--> [A] <--> [B] <--> [C] --> NULL
+            ^
+           HEAD
+```
+
+### Rimozione Centrale (deleteNode)
+```
+STATO: Rimuovere [B] dalla lista [A] <--> [B] <--> [C]
+
+PASSO 1: Identifica Prima (A) e Dopo (C)
+  Prima = B.prev = A
+  Dopo  = B.next = C
+
+PASSO 2: Bypass in avanti
+  A.next = C
+
+PASSO 3: Bypass all'indietro
+  C.prev = A
+  
+RISULTATO:
+  [A] <--> [C]    [B] (isolato)
+```
+
+---
+
+## 10. 🔧 Debug dei Doppi Puntatori
+
+### Test di Consistenza
+Dopo ogni operazione complessa, esegui questo controllo:
+```javascript
+function verificaConsistenza(head) {
+    let tmp = head;
+    while (tmp && tmp.next) {
+        // Controlla che i link siano simmetrici
+        if (tmp.next.prev !== tmp) {
+            console.error("ERRORE: Link asimmetrico trovato!", tmp.info);
+            return false;
+        }
+        tmp = tmp.next;
+    }
+    console.log("Lista consistente ✓");
+    return true;
+}
+```
+
+### Errore Tipico: "Fantasma nel Mezzo"
+Se inserisci un nodo `N` ma dimentichi di aggiornare `.prev` del successivo:
+```
+[A] --next--> [N] --next--> [B]
+[A] <--prev-- [N]           [B] --prev--> [A] ← SBAGLIATO! B non sa che N esiste!
+```
+Scorrendo avanti: A → N → B ✓
+Scorrendo indietro: B → A (N saltato!) ✗
+
+---
+
+## 11. 📋 Particolarità della Lista Bidirezionale
+
+### Vantaggi rispetto alla Unidirezionale
+1.  **Rimozione O(1)**: Se hai il puntatore al nodo, non devi cercare il precedente.
+2.  **Scorrimento bidirezionale**: Utile per browser history, playlist musicali.
+3.  **PopCoda O(1)**: Con puntatore `tail`, rimuovi dalla fine istantaneamente.
+
+### Svantaggi
+1.  **Più memoria**: Due puntatori per nodo invece di uno.
+2.  **Più errori**: Ogni modifica richiede aggiornamenti simmetrici.
+3.  **Codice più complesso**: Più righe di codice, più possibilità di bug.
+
+### Quando usarla?
+*   Navigazione avanti/indietro (browser, editor di testo).
+*   Cache LRU (rimuovi il meno usato in O(1)).
+*   Deque (inserisci/rimuovi da entrambi i lati).
+
+
