@@ -1,76 +1,101 @@
 # 📘 Guida Completa: Lista Bidirezionale (Doubly Linked List)
 
-## 1. Architettura Avanzata
-La Lista Bidirezionale offre simmetria: posso andare da A a B e da B ad A.
-Il costo è:
-1.  **Memoria**: Ogni nodo pesa di più (un puntatore extra `prev`).
-2.  **Manutenzione**: Ogni inserimento/rimozione richiede di aggiornare fino a 4 link invece di 2.
-
-### Diagramma "Insert Middle" (Inserimento di X tra A e B)
-In una lista singola aggiorniamo 2 link. Qui ne aggiorniamo 4.
-```
-      prev     next           prev     next
-   <------[A]------>       <------[B]------>
-```
-Vogliamo inserire `[X]`.
-
-**Sequenza Corretta**:
-1.  `X.prev = A`
-2.  `X.next = B`
-3.  `B.prev = X` (Attenzione: verificare se B esiste!)
-4.  `A.next = X`
+Questa guida copre la struttura, i doppi puntatori, gli algoritmi di inserimento/rimozione e la gestione avanzata.
 
 ---
 
-## 2. Il Concetto di "Sentinel Node" (Nodi Sentinella)
-Nelle implementazioni professionali (come in C++ `std::list` o Java `LinkedList`), per semplificare il codice ed eliminare i casi limite (lista vuota, inserimento in testa/coda), si usano nodi "fantasma" ai bordi.
+## 1. Cos'è una Lista Bidirezionale?
+Ogni nodo mantiene **due riferimenti**:
+1.  **Next**: Punta al nodo successivo.
+2.  **Prev**: Punta al nodo precedente.
 
-*   `SentinellaTesta`: Un nodo dummy all'inizio.
-*   `SentinellaCoda`: Un nodo dummy alla fine.
+Permette di scorrere avanti e indietro e di rimuovere nodi in O(1) se ne abbiamo il riferimento.
 
-**Vantaggio**:
-La lista "vera" sta in mezzo. Non bisogna mai controllare `if (head == null)` o aggiornare `head`, perché le sentinelle non cambiano mai.
-*Nel nostro progetto didattico non usiamo sentinelle per mostrare la logica "nuda e cruda" dei puntatori.*
-
----
-
-## 3. Algoritmi di Ricerca Ottimizzata
-Poiché la lista è bidirezionale, possiamo ottimizzare la ricerca (`search`) se conosciamo la lunghezza e manteniamo un puntatore `tail`.
-
-**Algoritmo "Smart Search"**:
-Se cerchiamo l'elemento in posizione `K` su `N` totali:
-*   Se `K < N / 2`: Parti da `head` e vai avanti (`next`).
-*   Se `K > N / 2`: Parti da `tail` e vai indietro (`prev`).
-
-Questo dimezza il tempo medio di ricerca, pur rimanendo O(N).
-
----
-
-## 4. Cancellazione O(1)
-Questo è il vero "superpotere" della lista bidirezionale.
-In una lista singola, per cancellare un nodo `X` devi avere il puntatore al nodo *prima* di lui (O(N) per trovarlo).
-Nella lista bidirezionale, se hai un puntatore a `X`, puoi cancellarlo istantaneamente:
+### Struttura del Nodo
 ```javascript
-function deleteNode(X) {
-    let prima = X.prev;
-    let dopo  = X.next;
-    
-    if (prima) prima.next = dopo;
-    if (dopo)  dopo.prev = prima;
-    
-    // X è isolato
+class NodoBi {
+    constructor(info) {
+        this.info = info;
+        this.prev = null; 
+        this.next = null;
+    }
 }
 ```
-Questo è fondamentale nelle cache LRU (Least Recently Used) o nei browser history.
+---
+
+## 2. Traversamento (Avanti e Indietro)
+
+### Forward (Avanti)
+Identico alla lista singola:
+```javascript
+let tmp = this.head;
+while(tmp !== null) tmp = tmp.next;
+```
+
+### Backward (Indietro)
+Partendo dalla coda (se abbiamo `tail`) o scorrendo fino in fondo:
+```javascript
+// Prima vado in fondo...
+while(tmp.next !== null) tmp = tmp.next;
+// ...poi torno indietro
+while(tmp !== null) {
+    console.log(tmp.info);
+    tmp = tmp.prev;
+}
+```
 
 ---
 
-## 5. Troubleshooting Avanzato
-Oltre agli errori base, verifica sempre:
+## 3. Algoritmi e Puntatori
 
-### Disconnessione "Zombie"
-Se rimuovi un nodo impostando `A.next = B`, ma ti dimentichi di fare `B.prev = A`, allora scendendo la lista va tutto bene, ma risalendola (`B.prev`) finirai nel nodo "cancellato" o nel nulla.
-*   **Test**: Dopo ogni operazione, prova a scorrere la lista dall'inizio alla fine E dalla fine all'inizio. Devono corrispondere.
+### A. Inserimento in Testa
+1.  `N.next = head`.
+2.  Se `head` esiste, `head.prev = N` (Cruciale!).
+3.  `head = N`.
 
-### Circular Reference Leak
-Se per errore colleghi `A.next = A`, crei un ciclo infinito. Se un algoritmo di stampa non ha protezioni, il browser si bloccherà (freeze).
+### B. Inserimento "Prima" di un nodo T
+Scenario: `P <-> T`. Vogliamo `P <-> N <-> T`.
+1.  Salviamo P (`P = T.prev`).
+2.  Colleghiamo N: `N.next = T`, `N.prev = P`.
+3.  Aggiorniamo T: `T.prev = N`.
+4.  Aggiorniamo P: se P esiste `P.next = N`, altrimenti `head = N`.
+
+### C. Rimozione Nodo X (deleteNode) - O(1)
+Se ho il puntatore a X, non devo cercare nulla.
+1.  `Prima = X.prev`.
+2.  `Dopo = X.next`.
+3.  `if (Prima) Prima.next = Dopo`.
+4.  `if (Dopo) Dopo.prev = Prima`.
+5.  Pulisco X (`X.next = null`, `X.prev = null`).
+
+---
+
+## 4. Concetti Avanzati (Masterclass)
+
+### Inserimento Centrale: 4 Link da gestire
+In una lista singola tocchi 2 collegamenti. Qui ne devi aggiornare 4:
+`N.prev`, `N.next`, `Prec.next`, `Succ.prev`.
+Il diagramma mentale deve essere chiaro per non creare "nodi zombie".
+
+### Nodi Sentinella
+In implementazioni professionali si usano due nodi fittizi fissi (`HeadSentinel`, `TailSentinel`) che non contengono dati. Questo elimina la necessità di controllare `if (head == null)` ogni volta, perché c'è sempre almeno la sentinella.
+
+### Ricerca Ottimizzata "Smart Search"
+Se cerchi l'elemento K su N totali:
+*   K < N/2 -> Parti dalla testa.
+*   K > N/2 -> Parti dalla coda (Tail).
+
+---
+
+## 5. ⚠️ Errori Comuni e Troubleshooting
+
+### A. Link Asimmetrici ("One-Way Street")
+Il bug più frequente. Fai `A.next = B` ma dimentichi `B.prev = A`.
+*   **Risultato**: Scorrendo avanti funziona, scorrendo indietro si rompe o salta nodi.
+
+### B. Dimenticare la vecchia Testa
+Quando fai `pushTesta`, la vecchia testa diventa il secondo nodo. Devi ricordarti di impostare il suo `.prev` al nuovo nodo.
+
+### C. Disconnessione "Zombie"
+Se rimuovi un nodo ma non aggiorni entrambi i lati (es. aggiorni solo il next del precedente ma non il prev del successivo), la lista diventa inconsistente se percorsa al contrario.
+*Test*: Scorrere sempre la lista in entrambe le direzioni dopo una modifica complessa.

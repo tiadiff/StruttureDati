@@ -1,58 +1,66 @@
-# 📘 Guida Completa: La Coda (Queue)
+# 📗 Guida Completa: La Coda (Queue)
 
-## 1. Varianti della Coda
+Guida unificata: Teoria FIFO, Varianti (Circolare, Deque) e Troubleshooting.
 
-### Coda Semplice (Javascript List Implementation)
-*   **Enqueue**: O(N) (nel nostro caso senza puntatore tail) o O(1) (con tail).
-*   **Dequeue**: O(1).
+---
+
+## 1. Il Concetto FIFO
+**Queue** = First In, First Out (Primo dentro, Primo fuori).
+Come una fila alla cassa: chi arriva prima, esce prima.
+
+### Operazioni
+1.  **ENQUEUE**: Aggiunge in fondo (Coda).
+2.  **DEQUEUE**: Rimuove dal fronte (Testa).
+3.  **FRONT**: Legge il primo.
+
+---
+
+## 2. Implementazione e Performance
+Noi usiamo una Lista Unidirezionale.
+*   **Decoda (Dequeue)**: `popTesta()`. Costo **O(1)**. Basta spostare `head`.
+*   **Accoda (Enqueue)**: `pushCoda()`.
+    *   Senza puntatore `tail`: Costo **O(N)** (devo scorrere tutto).
+    *   Con puntatore `tail`: Costo **O(1)** (accedo subito alla fine).
+    *   *Nota*: La nostra implementazione didattica usa O(N) per mostrare l'algoritmo di scorrimento, ma in produzione si usa sempre `tail`.
+
+---
+
+## 3. Varianti Avanzate (Masterclass)
 
 ### Coda Circolare (Ring Buffer)
-Implementata su Array a dimensione fissa.
-Si usano due indici: `HeadIndex` e `TailIndex`.
-Quando `TailIndex` arriva alla fine dell'array `[N]`, invece di fermarsi (o riallocare), torna a `0` (se la cella 0 è libera perché è stata fatta una dequeue).
-*   Utile in: Driver di dispositivi, Buffer audio (streaming dati continuo).
+Implementata su Array fisso. Quando arrivi alla fine dell'array, riparti dall'indice 0.
+*   Efficientissima per buffer di dati, driver audio, streaming. Non richiede allocazione di memoria dinamica.
 
 ### Deque (Double Ended Queue)
-Una "super-coda" dove puoi fare Push/Pop sia davanti che dietro.
-Unisce i poteri di Stack e Queue. Implementabile facilmente con una Lista Bidirezionale.
+Una struttura ibrida Stack/Queue dove puoi inserire e rimuovere sia da `Head` che da `Tail`.
+
+### Priority Queue (Coda a Priorità)
+Non FIFO puro. Esce sempre l'elemento con **priorità più alta**.
+*   Implementata efficientemente con un **Binary Heap** (Albero), non con una lista semplice.
 
 ---
 
-## 2. Il Problema della "Blocking Queue"
-Nel multithreading (programmazione parallela), le code servono a far comunicare thread diversi (Produttore -> Consumatore).
-*   Se la coda è piena, il Produttore si blocca (Wait).
-*   Se la coda è vuota, il Consumatore si blocca (Wait).
-Questo concetto è alla base di sistemi come **Kafka** o **RabbitMQ**.
-
----
-
-## 3. Gestione Algoritmica del Traverse (Buffering)
-A volte vogliamo processare la coda a blocchi ("Batch Processing").
-Algoritmo:
+## 4. Traversamento e Buffer
+Spesso le code vengono processate a "Batch" (blocchi).
 ```javascript
-while (!coda.isEmpty()) {
-    let batch = [];
-    // Prendi fino a 10 elementi alla volta
-    for(let i=0; i<10 && !coda.isEmpty(); i++) {
-        batch.push(coda.dequeue());
-    }
-    processaBatch(batch);
+// Preleva finché ce ne sono o fino a max 10
+while (!coda.isEmpty() && batch.length < 10) {
+    batch.push(coda.dequeue());
 }
 ```
-Questo riduce l'overhead delle chiamate di sistema se dobbiamo scrivere i dati su disco/database.
 
 ---
 
-## 4. Priority Queue (Coda con Priorità)
-Non è una semplice lista FIFO. È spesso implementata con una struttura chiamata **Heap Binario** (Albero).
-*   L'elemento con priorità massima "galleggia" in cima all'albero.
-*   `Dequeue` prende la radice (O(log N)).
-*   `Enqueue` inserisce e riordina l'albero (O(log N)).
-Molto più efficiente di una lista ordinata (O(N)) per questo scopo.
+## 5. ⚠️ Errori Comuni e Troubleshooting
 
----
+### A. Confondere Testa e Coda
+Se inserisci in testa (`pushTesta`) e rimuovi dalla testa (`popTesta`), hai fatto uno Stack!
+In una Coda le operazioni devono avvenire agli estremi opposti.
 
-## 5. Troubleshooting: Memory Leaks in Code
-Nelle code basate su liste linkate, un errore comune nei linguaggi senza Garbage Collector è dimenticare di liberare il nodo dopo il `dequeue`.
-In JavaScript, il rischio è mantenere riferimenti non voluti agli oggetti dentro i nodi estratti.
-*   **Best Practice**: Quando estrai un dato, se il nodo conteneva oggetti pesanti, assicurati che non ci siano altre variabili globali che puntano ad esso.
+### B. Coda Infinita (Loop)
+In algoritmi come la BFS (Breadth First Search) sui grafi, se rimetti in coda un nodo appena uscito (perché è vicino di qualcun altro) senza segnarlo come "visitato", la coda non si svuoterà mai -> Crash per memoria piena.
+
+### C. Performance Array vs List
+In JavaScript, usare un Array `[]` come coda (`push` + `shift`) è funzionale ma lento su grandi numeri.
+`shift()` (rimuovi il primo) costringe JS a spostare tutti gli indici dell'array: costo **O(N)**.
+La Lista Linkata fa la stessa operazione in **O(1)**.
