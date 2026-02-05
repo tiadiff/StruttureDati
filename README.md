@@ -1,8 +1,18 @@
 # 📘 Visualizzatore di Strutture Dati
 
-Questo progetto è uno strumento didattico avanzato per l'apprendimento delle strutture dati lineari. A differenza di un semplice tutorial, questa applicazione implementa da zero le classi fondamentali (`LinkedList`, `DoublyLinkedList`, `Stack`, `Queue`) e ne visualizza il comportamento in tempo reale, offrendo un log dettagliato delle operazioni sui puntatori.
+Questo progetto è uno strumento didattico avanzato per l'apprendimento delle strutture dati lineari.<br><br>A differenza di un semplice tutorial, questa applicazione implementa da zero le classi fondamentali (`LinkedList`, `DoublyLinkedList`, `Stack`, `Queue`) e ne visualizza il comportamento in tempo reale, offrendo un log dettagliato delle operazioni sui puntatori.
 
-Repo GitHub: [tiadiff/StruttureDati](https://github.com/tiadiff/StruttureDati)
+---
+
+## 🛠 Istruzioni per l'Esecuzione Locale
+
+Poiché il progetto utilizza solo HTML, CSS e JavaScript standard (senza framework o compilatori), è eseguibile immediatamente:
+
+1.  Clona il repository (o scarica lo ZIP con tutti i files del progetti).
+
+2.  Apri il file **`index.html`** con un qualsiasi browser.
+
+3.  Non è necessario alcun server locale (Node.js, Apache, ecc.).
 
 ---
 
@@ -44,7 +54,7 @@ Vogliamo inserire `N` tra `A` (target) e `B` (il successivo di A).
 
 # 2. ↔️ Lista Bidirezionale (Doubly Linked List)
 
-Più flessibile ma complessa: ogni nodo ha **due** puntatori. Questo permette di "tornare indietro" ma richiede doppia manutenzione ad ogni modifica.
+Più flessibile ma complessa: ogni nodo ha **due** puntatori. <br>Questo permette di "tornare indietro" ma richiede doppia manutenzione ad ogni modifica.
 
 ### Struttura del NodoBi
 *   `info`: Dato.
@@ -86,7 +96,7 @@ Per rimuovere un nodo `X` situato tra `A` e `B` (`A <-> X <-> B`):
 
 # 3. 📚 Pila (Stack) - LIFO
 
-Struttura **Last In, First Out** (Ultimo dentro, Primo fuori). È concettualmente una "pila di piatti".
+Struttura **Last In, First Out** (Ultimo dentro, Primo fuori). <br>È concettualmente una "pila di piatti".
 
 ### Implementazione Logica
 Sebbene usiamo internamente una lista, l'interfaccia della classe `Pila` (in `strutture_derivate.js`) blocca qualsiasi operazione che non sia sulla cima (Testa).
@@ -99,7 +109,7 @@ Sebbene usiamo internamente una lista, l'interfaccia della classe `Pila` (in `st
 
 # 4. 🚶 Coda (Queue) - FIFO
 
-Struttura **First In, First Out** (Primo dentro, Primo fuori). È come una fila alla posta.
+Struttura **First In, First Out** (Primo dentro, Primo fuori). <br>È come una fila alla posta.
 
 ### Implementazione Logica
 Usiamo una lista imponendo vincoli opposti allo Stack.
@@ -112,16 +122,6 @@ Usiamo una lista imponendo vincoli opposti allo Stack.
     *   È una `popTesta`.
     *   Si preleva l'elemento che è nella lista da più tempo (la testa).
     *   Il puntatore `head` avanza al secondo elemento (`head = head.link`).
-
----
-
-## 🛠 Istruzioni per l'Esecuzione Locale
-
-Poiché il progetto utilizza solo HTML, CSS e JavaScript standard (senza framework o compilatori), è eseguibile immediatamente:
-
-1.  Clona il repository (o scarica lo ZIP).
-2.  Apri il file **`index.html`** con un qualsiasi browser moderno (Chrome, Firefox, Safari).
-3.  Non è necessario alcun server locale (Node.js, Apache, ecc.).
 
 ---
 
