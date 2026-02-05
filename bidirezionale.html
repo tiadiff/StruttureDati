@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Bidirezionale Educational</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --panel-bg: #202024;
+            --accent: #8257e5;
+            /* Viola per generico */
+            --fifo-color: #e58e26;
+            /* Arancio per Coda */
+            --lifo-color: #0fb9b1;
+            /* Turchese per Pila */
+            --text-main: #e1e1e6;
+            --text-muted: #a8a8b3;
+            --danger: #e55757;
+            --success: #04d361;
+            --warning: #fad02c;
+            --border-radius: 8px;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        /* --- Controls --- */
+        .controls-panel {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #323238;
+            background: #121214;
+            color: white;
+            box-sizing: border-box;
+            font-family: var(--font-mono);
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        /* Groups */
+        .action-group {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 3px solid #555;
+        }
+
+        .action-group.lifo {
+            border-color: var(--lifo-color);
+        }
+
+        .action-group.fifo {
+            border-color: var(--fifo-color);
+        }
+
+        .action-group h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-lifo {
+            background-color: rgba(15, 185, 177, 0.2);
+            color: var(--lifo-color);
+            border: 1px solid var(--lifo-color);
+        }
+
+        .btn-lifo:hover {
+            background-color: var(--lifo-color);
+            color: white;
+        }
+
+        .btn-fifo {
+            background-color: rgba(229, 142, 38, 0.2);
+            color: var(--fifo-color);
+            border: 1px solid var(--fifo-color);
+        }
+
+        .btn-fifo:hover {
+            background-color: var(--fifo-color);
+            color: white;
+        }
+
+        .btn-generic {
+            background-color: #29292e;
+            color: var(--text-muted);
+        }
+
+        .btn-generic:hover {
+            background-color: #323238;
+            color: white;
+        }
+
+        .btn-danger {
+            background: rgba(229, 87, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* --- Visualizer --- */
+        .visual-panel {
+            background: var(--panel-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            overflow-x: auto;
+            display: flex;
+            align-items: center;
+            min-height: 200px;
+            border: 1px solid #323238;
+        }
+
+        .list-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .node-wrapper {
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        .node {
+            background: #202024;
+            border: 2px solid var(--accent);
+            color: white;
+            padding: 15px 10px;
+            border-radius: 8px;
+            min-width: 60px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .node::before {
+            content: "prev";
+            position: absolute;
+            top: -15px;
+            left: 5px;
+            font-size: 0.6em;
+            color: #555;
+        }
+
+        .node::after {
+            content: "next";
+            position: absolute;
+            bottom: -15px;
+            right: 5px;
+            font-size: 0.6em;
+            color: #555;
+        }
+
+        .arrows {
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: #666;
+            margin: 0 10px;
+            font-weight: bold;
+            letter-spacing: -2px;
+        }
+
+        .null-label {
+            color: #444;
+            font-style: italic;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Logs --- */
+        .logs-panel {
+            background: #121214;
+            border: 1px solid #323238;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+        }
+
+        .log-step {
+            color: var(--warning);
+            font-weight: bold;
+        }
+
+        .log-text {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Lista Bidirezionale (Doubly Linked)</h1>
+    <p style="text-align:center; color:#888;">Visualizzazione Stack (LIFO) e Queue (FIFO) con doppi collegamenti.</p>
+
+    <div class="layout-grid">
+        <div class="controls-panel">
+            <div class="control-group">
+                <label>Valore Nodo</label>
+                <input type="text" id="valInput" placeholder="Dato...">
+            </div>
+            <div class="control-group">
+                <label>Target</label>
+                <input type="text" id="targetInput" placeholder="Nodo esistente...">
+            </div>
+
+            <!-- Modulo LIFO (Stack) -->
+            <div class="action-group lifo">
+                <h4>Stack (Pila) <span style="color:var(--lifo-color)">LIFO</span></h4>
+                <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">Ultimo entrato, primo uscito. Opera solo
+                    sulla TESTA.</p>
+                <button class="btn-lifo" onclick="wrap(() => lista.pushTesta(getVal()))">Push (Testa)</button>
+                <button class="btn-lifo" onclick="wrap(() => lista.popTesta())">Pop (Testa)</button>
+            </div>
+
+            <!-- Modulo FIFO (Queue) -->
+            <div class="action-group fifo">
+                <h4>Queue (Coda) <span style="color:var(--fifo-color)">FIFO</span></h4>
+                <p style="font-size:0.75rem; color:#aaa; margin-bottom:10px;">Primo entrato, primo uscito. Inserisci in
+                    CODA, togli dalla TESTA.</p>
+                <button class="btn-fifo" onclick="wrap(() => lista.pushCoda(getVal()))">Enqueue (Push Coda)</button>
+                <button class="btn-fifo" onclick="wrap(() => lista.popTesta())">Dequeue (Pop Testa)</button>
+            </div>
+
+            <div class="action-group">
+                <h4>Generico / Altro</h4>
+                <button class="btn-generic" onclick="wrap(() => lista.pushDopoNodo(getVal(), getTarget()))">Inserisci
+                    Dopo</button>
+                <button class="btn-generic" onclick="wrap(() => lista.pushPrimaNodo(getVal(), getTarget()))">Inserisci
+                    Prima</button>
+                <button class="btn-generic" onclick="wrap(() => lista.popCoda())">Pop Coda (Rimuovi Ultimo)</button>
+                <button class="btn-generic" onclick="wrap(() => lista.popDopoNodo(getTarget()))">Rimuovi Dopo</button>
+            </div>
+
+            <button class="btn-danger" onclick="wrap(() => lista.clearList())">Svuota Tutto</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:20px; overflow:hidden;">
+            <div class="visual-panel">
+                <div class="list-container" id="visualContainer"></div>
+            </div>
+
+            <div class="logs-panel" id="logsPanel">
+                <div style="margin-bottom:10px; color:#555; font-size:0.8rem; text-transform:uppercase;">Console
+                    Algoritmo</div>
+                <div id="logsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lista_bidirezionale.js"></script>
+    <script>
+        const lista = new ListaBi();
+
+        function getVal() { return document.getElementById('valInput').value; }
+        function getTarget() { return document.getElementById('targetInput').value; }
+
+        function render() {
+            const c = document.getElementById('visualContainer');
+            c.innerHTML = '';
+
+            let curr = lista.head;
+
+            if (!curr) {
+                c.innerHTML = '<span class="null-label">HEAD</span><div class="null-label">[ Lista Vuota ]</div>';
+                return;
+            }
+
+            c.innerHTML += '<span class="null-label">HEAD</span> <span class="arrows">&rarr;</span>';
+
+            while (curr) {
+                // Nodo
+                const div = document.createElement('div');
+                div.className = 'node-wrapper';
+                div.innerHTML = `
+                    <div class="node">${curr.info}</div>
+                    ${curr.next ? '<span class="arrows">&harr;</span>' : '<span class="arrows">&rarr;</span>'}
+                `;
+                c.appendChild(div);
+                curr = curr.next;
+            }
+            c.innerHTML += '<span class="null-label">NULL</span>';
+        }
+
+        function logToUI(msg) {
+            const div = document.getElementById('logsContent');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+
+            if (msg.includes("[ALGORITMO]")) {
+                entry.innerHTML = `<span class="log-step">[STEP]</span> <span class="log-text">${msg.replace('[ALGORITMO]', '')}</span>`;
+            } else if (msg.includes("[RISULTATO]")) {
+                entry.innerHTML = `<span style="color:#04d361; font-weight:bold;">[SUCCESS]</span> <span style="color:white;">${msg.replace('[RISULTATO]', '')}</span>`;
+            } else {
+                entry.innerHTML = `<span style="color:#666;">${msg}</span>`;
+            }
+
+            div.appendChild(entry);
+            document.getElementById('logsPanel').scrollTop = document.getElementById('logsPanel').scrollHeight;
+        }
+
+        // Override console
+        const oldLog = console.log;
+        console.log = function (m) { oldLog(m); logToUI(m); }
+
+        function wrap(action) {
+            // Validation simple
+            try { action(); } catch (e) { console.log(e); }
+            render();
+        }
+
+        // Init demo
+        console.log("Sistema Bidirezionale Pronto.");
+        render(); // empty
+    </script>
+</body>
+
+</html>

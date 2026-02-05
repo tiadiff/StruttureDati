@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Strutture Dati Educational</title>
+    <style>
+        :root {
+            --bg-color: #0f0f10;
+            --panel-bg: #18181b;
+            --border-color: #27272a;
+
+            --accent-uni: #8257e5;
+            /* Viola */
+            --accent-bi: #e056fd;
+            /* Fucsia */
+            --accent-stack: #0fb9b1;
+            /* Turchese */
+            --accent-queue: #e58e26;
+            /* Arancio */
+
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+
+            --font-main: 'Inter', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 0.7em;
+            background: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #888;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 30px;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Tab Colors */
+        .tab-btn[data-target="uni"].active {
+            border-bottom-color: var(--accent-uni);
+            color: var(--accent-uni);
+        }
+
+        .tab-btn[data-target="bi"].active {
+            border-bottom-color: var(--accent-bi);
+            color: var(--accent-bi);
+        }
+
+        .tab-btn[data-target="stack"].active {
+            border-bottom-color: var(--accent-stack);
+            color: var(--accent-stack);
+        }
+
+        .tab-btn[data-target="queue"].active {
+            border-bottom-color: var(--accent-queue);
+            color: var(--accent-queue);
+        }
+
+        /* CONTENT AREA */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tab-pane {
+            display: none;
+            height: 100%;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: 1fr 200px;
+            gap: 20px;
+            animation: fadeIn 0.2s;
+        }
+
+        .tab-pane.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* PANELS */
+        .panel-controls {
+            grid-row: 1 / -1;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-visual {
+            grid-row: 1 / 2;
+            background: #141416;
+            /* Darker visual area */
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Center list initially */
+            overflow: auto;
+            position: relative;
+        }
+
+        .panel-logs {
+            grid-row: 2 / 3;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            overflow-y: auto;
+        }
+
+        /* CONTROLS UI */
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #0f0f10;
+            color: white;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #555;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Button Variants */
+        .btn-uni {
+            background: #3b2e5a;
+            color: #d4c2fc;
+        }
+
+        .btn-uni:hover {
+            background: var(--accent-uni);
+            color: white;
+        }
+
+        .btn-bi {
+            background: #5a2e55;
+            color: #fcc2fc;
+        }
+
+        .btn-bi:hover {
+            background: var(--accent-bi);
+            color: white;
+        }
+
+        .btn-stack {
+            background: #1e4543;
+            color: #aef0ec;
+        }
+
+        .btn-stack:hover {
+            background: var(--accent-stack);
+            color: #000;
+        }
+
+        .btn-queue {
+            background: #523719;
+            color: #f5dcc0;
+        }
+
+        .btn-queue:hover {
+            background: var(--accent-queue);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: rgba(200, 50, 50, 0.1);
+            color: #ff6b6b;
+            border: 1px solid #5a2525;
+        }
+
+        .btn-danger:hover {
+            background: #c83232;
+            color: white;
+        }
+
+        /* VISUALIZATION NODES */
+        .list-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            min-height: 100px;
+        }
+
+        .node {
+            padding: 15px 20px;
+            border-radius: 8px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-family: var(--font-mono);
+            position: relative;
+            background: #27272a;
+            border: 2px solid #555;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Node Colors per Type */
+        .type-uni .node {
+            border-color: var(--accent-uni);
+            color: var(--accent-uni);
+        }
+
+        .type-bi .node {
+            border-color: var(--accent-bi);
+            color: var(--accent-bi);
+        }
+
+        .type-stack .node {
+            border-color: var(--accent-stack);
+            color: var(--accent-stack);
+            background: #102e2c;
+        }
+
+        .type-queue .node {
+            border-color: var(--accent-queue);
+            color: var(--accent-queue);
+            background: #33220e;
+        }
+
+        /* Connectors */
+        .arrow {
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: #444;
+            margin: 0 8px;
+        }
+
+        .null-node {
+            opacity: 0.4;
+            border: 1px dashed #666;
+            background: transparent !important;
+            color: #888 !important;
+        }
+
+        /* Stack Specific Layout (Vertical if wanted, but horizontal is easier for DOM, let's Stick to Horizontal for consistency or customize) */
+        .stack-container {
+            display: flex;
+            flex-direction: column-reverse;
+            /* Bottom up */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stack-container .arrow {
+            transform: rotate(-90deg);
+            margin: 5px 0;
+        }
+
+        .stack-container .null-label {
+            display: none;
+        }
+
+        /* Stack base implies null */
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>JS Data Structures <span class="badge">v1.0</span></h1>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('uni')" data-target="uni">Lista Unidirezionale</button>
+        <button class="tab-btn" onclick="switchTab('bi')" data-target="bi">Lista Bidirezionale</button>
+        <button class="tab-btn" onclick="switchTab('stack')" data-target="stack">Pila (Stack)</button>
+        <button class="tab-btn" onclick="switchTab('queue')" data-target="queue">Coda (Queue)</button>
+    </div>
+
+    <div class="main-content">
+
+        <!-- === TAB 1: UNIDIREZIONALE === -->
+        <div id="tab-uni" class="tab-pane active type-uni">
+            <div class="panel-controls">
+                <h3>Unidirezionale</h3>
+                <label>Valore</label> <input type="text" id="uni-val" placeholder="Es. A">
+                <label>Target</label> <input type="text" id="uni-target" placeholder="Es. B">
+
+                <button class="btn-uni" onclick="run('uni', 'pushTesta')">Push Testa</button>
+                <button class="btn-uni" onclick="run('uni', 'pushCoda')">Push Coda</button>
+                <button class="btn-uni" onclick="run('uni', 'pushDopo')">Push Dopo</button>
+                <button class="btn-uni" onclick="run('uni', 'pushPrima')">Push Prima</button>
+                <hr style="border-color:#333; opacity:0.3; margin:15px 0;">
+                <button class="btn-uni" onclick="run('uni', 'popTesta')">Pop Testa</button>
+                <button class="btn-uni" onclick="run('uni', 'popCoda')">Pop Coda</button>
+                <button class="btn-uni" onclick="run('uni', 'popDopo')">Pop Dopo</button>
+                <button class="btn-danger" onclick="run('uni', 'clear')">Svuota</button>
+            </div>
+            <div class="panel-visual">
+                <div id="viz-uni" class="list-container"></div>
+            </div>
+            <div class="panel-logs" id="log-uni"></div>
+        </div>
+
+        <!-- === TAB 2: BIDIREZIONALE === -->
+        <div id="tab-bi" class="tab-pane type-bi">
+            <div class="panel-controls">
+                <h3>Bidirezionale</h3>
+                <label>Valore</label> <input type="text" id="bi-val" placeholder="Es. 10">
+                <label>Target</label> <input type="text" id="bi-target" placeholder="Es. 20">
+
+                <button class="btn-bi" onclick="run('bi', 'pushTesta')">Push Testa</button>
+                <button class="btn-bi" onclick="run('bi', 'pushCoda')">Push Coda</button>
+                <button class="btn-bi" onclick="run('bi', 'pushDopo')">Push Dopo</button>
+                <button class="btn-bi" onclick="run('bi', 'pushPrima')">Push Prima</button>
+                <hr style="border-color:#333; opacity:0.3; margin:15px 0;">
+                <button class="btn-bi" onclick="run('bi', 'popTesta')">Pop Testa</button>
+                <button class="btn-bi" onclick="run('bi', 'popCoda')">Pop Coda</button>
+                <button class="btn-bi" onclick="run('bi', 'popDopo')">Pop Dopo</button>
+                <button class="btn-danger" onclick="run('bi', 'clear')">Svuota</button>
+            </div>
+            <div class="panel-visual">
+                <div id="viz-bi" class="list-container"></div>
+            </div>
+            <div class="panel-logs" id="log-bi"></div>
+        </div>
+
+        <!-- === TAB 3: STACK (PILA) === -->
+        <div id="tab-stack" class="tab-pane type-stack">
+            <div class="panel-controls">
+                <h3>Pila (Stack) LIFO</h3>
+                <p style="color:#666; font-size:0.8rem; margin-bottom:20px;">Accesso consentito solo alla CIMA (Testa).
+                </p>
+
+                <label>Valore</label> <input type="text" id="stack-val" placeholder="Es. Piatto">
+
+                <button class="btn-stack" onclick="run('stack', 'push')">Push</button>
+                <button class="btn-stack" onclick="run('stack', 'pop')">Pop</button>
+                <button class="btn-stack" onclick="run('stack', 'peek')">Peek (Osserva)</button>
+                <button class="btn-danger" onclick="run('stack', 'clear')">Svuota</button>
+            </div>
+            <div class="panel-visual">
+                <!-- Stack visualized vertically -->
+                <div id="viz-stack" class="stack-container"></div>
+            </div>
+            <div class="panel-logs" id="log-stack"></div>
+        </div>
+
+        <!-- === TAB 4: QUEUE (CODA) === -->
+        <div id="tab-queue" class="tab-pane type-queue">
+            <div class="panel-controls">
+                <h3>Coda (Queue) FIFO</h3>
+                <p style="color:#666; font-size:0.8rem; margin-bottom:20px;">Inserimento in Coda, Prelievo dalla Testa.
+                </p>
+
+                <label>Valore</label> <input type="text" id="queue-val" placeholder="Es. Ticket #1">
+
+                <button class="btn-queue" onclick="run('queue', 'enqueue')">Enqueue</button>
+                <button class="btn-queue" onclick="run('queue', 'dequeue')">Dequeue</button>
+                <button class="btn-queue" onclick="run('queue', 'front')">Front (Osserva)</button>
+                <button class="btn-danger" onclick="run('queue', 'clear')">Svuota</button>
+            </div>
+            <div class="panel-visual">
+                <div id="viz-queue" class="list-container"></div>
+            </div>
+            <div class="panel-logs" id="log-queue"></div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="lista.js"></script>
+    <script src="lista_bidirezionale.js"></script>
+    <script src="strutture_derivate.js"></script>
+
+    <script>
+        // --- DATA INSTANCES ---
+        const structures = {
+            uni: new Lista(),
+            bi: new ListaBi(),
+            stack: new Pila(),
+            queue: new Coda()
+        };
+
+        // --- TABS LOGIC ---
+        function switchTab(target) {
+            // UI Update
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[data-target="${target}"]`).classList.add('active');
+
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(`tab-${target}`).classList.add('active');
+
+            render(target);
+        }
+
+        // --- CONTROLLER LOGIC ---
+        function run(type, action) {
+            const valInput = document.getElementById(`${type}-val`);
+            const targetInput = document.getElementById(`${type}-target`);
+
+            const val = valInput ? valInput.value : null;
+            const target = targetInput ? targetInput.value : null;
+            const struct = structures[type];
+
+            // Validation basics
+            if (action.includes('push') && !action.includes('Dopo') && !action.includes('Prima') && !val) return alert("Inserisci Valore");
+            if (['enqueue'].includes(action) && !val) return alert("Inserisci Valore");
+            if ((action.includes('Dopo') || action.includes('Prima')) && (!val || !target)) return alert("Valore e Target necessari");
+            if (['popDopo', 'popPrima'].includes(action) && !target) return alert("Target necessario");
+
+            // Execute
+            try {
+                if (action === 'pushTesta') struct.pushTesta(val);
+                else if (action === 'pushCoda') struct.pushCoda(val);
+                else if (action === 'pushDopo') struct.pushDopoNodo(val, target);
+                else if (action === 'pushPrima') struct.pushPrimaNodo(val, target);
+                else if (action === 'popTesta') struct.popTesta();
+                else if (action === 'popCoda') struct.popCoda();
+                else if (action === 'popDopo') struct.popDopoNodo(target);
+                else if (action === 'clear') { struct.clearList ? struct.clearList() : struct.clear(); }
+
+                // Wrapper methods
+                else if (action === 'push') struct.push(val);
+                else if (action === 'pop') struct.pop();
+                else if (action === 'peek') { const v = struct.peek(); logConsole(type, `Peek: ${v}`); }
+                else if (action === 'enqueue') struct.enqueue(val);
+                else if (action === 'dequeue') struct.dequeue();
+                else if (action === 'front') { const v = struct.front(); logConsole(type, `Front: ${v}`); }
+
+            } catch (e) {
+                console.error(e);
+            }
+
+            render(type);
+        }
+
+        // --- RENDERER ---
+        function render(type) {
+            const container = document.getElementById(`viz-${type}`);
+            container.innerHTML = '';
+
+            const struct = structures[type];
+            // Access head directly for all types (wrappers expose getter)
+            let curr = struct.head;
+
+            if (!curr) {
+                container.innerHTML = '<div class="node null-node">Vuota</div>';
+                return;
+            }
+
+            // HEAD label
+            if (type !== 'stack') {
+                container.innerHTML += '<span style="color:#555; font-size:0.8em; margin-right:10px;">HEAD</span>';
+            }
+
+            while (curr) {
+                const div = document.createElement('div');
+                div.className = 'node';
+                div.innerText = curr.info;
+                container.appendChild(div);
+
+                if (type === 'bi') {
+                    if (curr.next) container.innerHTML += '<span class="arrow">↔</span>';
+                } else if (type === 'stack') {
+                    if (curr.link) container.innerHTML += '<span class="arrow">↓</span>';
+                } else {
+                    if (curr.link) container.innerHTML += '<span class="arrow">→</span>';
+                }
+
+                curr = curr.link || curr.next; // Handle both uni/bi prop names
+            }
+
+            if (type !== 'stack') {
+                container.innerHTML += '<span class="arrow">→</span> <div class="node null-node">NULL</div>';
+            }
+        }
+
+        // --- LOGGING ---
+        // Hijack global console log from classes
+        const oldLog = console.log;
+        console.log = function (msg) {
+            oldLog(msg);
+            // Determine which tab is active to route log
+            const activeTab = document.querySelector('.tab-btn.active').dataset.target;
+            logConsole(activeTab, msg);
+        };
+
+        function logConsole(type, msg) {
+            const logDiv = document.getElementById(`log-${type}`);
+            if (!logDiv) return;
+
+            const p = document.createElement('div');
+            p.style.marginBottom = '5px';
+            p.style.borderBottom = '1px solid #333';
+
+            if (msg.includes('[ALGORITMO]')) p.style.color = '#e0c058'; // Yellow
+            else if (msg.includes('[RISULTATO]')) p.style.color = '#58e089'; // Green
+            else p.style.color = '#ccc';
+
+            p.innerText = msg;
+            logDiv.appendChild(p);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Init
+        render('uni');
+
+    </script>
+</body>
+
+</html>
