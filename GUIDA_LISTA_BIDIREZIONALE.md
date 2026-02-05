@@ -78,3 +78,29 @@ Visualizza la lista al contrario senza modificarla (a differenza del `reverse` d
 
 ### `toDoublyArray()`: Esportazione
 Converte la struttura puntata in un semplice Array JavaScript `[]` per facilitare il debug o l'uso con altre librerie.
+
+---
+
+## 6. ⚠️ Errori Comuni e Troubleshooting
+
+La lista bidirezionale raddoppia i puntatori, e quindi raddoppia i rischi di errore.
+
+### A. Link Asimmetrici ("One-Way Street")
+È l'errore più subdolo. Imposti correttamente `A.next = B`, ma dimentichi `B.prev = A`.
+*   **Sintomo**: Se scorri la lista in avanti sembra perfetta. Se provi a tornare indietro (`prev`), il collegamento non esiste o punta al nodo sbagliato.
+*   **Soluzione**: Ogni volta che tocchi `.next` di un nodo, chiediti subito: "Ho aggiornato anche il `.prev` del nodo di destinazione?"
+
+### B. Dimenticare la Testa
+Quando inserisci in testa, devi aggiornare il `prev` della vecchia testa.
+*   ❌ **Errore**: `nuovo.next = head; head = nuovo;` (La vecchia testa pensa ancora di essere la prima, il suo `prev` è rimasto `null`).
+*   ✅ **Corretto**: `if (head) head.prev = nuovo;`
+
+### C. Il Labirinto dei Riferimenti
+Nelle operazioni complesse (inserimento nel mezzo), devi aggiornare 4 puntatori.
+Se inserisci `N` tra `P` e `S`:
+1.  `N.prev`
+2.  `N.next`
+3.  `P.next`
+4.  `S.prev`
+Dimenticarne uno crea una lista corrotta. Disegna sempre su carta i collegamenti prima di scrivere il codice!
+

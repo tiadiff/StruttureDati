@@ -44,3 +44,21 @@ In ARRAY a dimensione fissa, quando la coda arriva alla fine dell'array, riparte
 Una variante fondamentale dove gli elementi non escono solo in base all'ordine di arrivo, ma in base a un valore di "priorità".
 *   *Enqueue*: Inserisce l'elemento al posto giusto mantenendo l'ordine di priorità (O(N)).
 *   *Dequeue*: Rimuove sempre la testa (che è l'elemento a priorità più alta).
+
+---
+
+## 5. ⚠️ Errori Comuni e Troubleshooting
+
+### A. Confondere Testa e Coda
+*   ❌ **Errore**: Inserire in testa (`pushTesta`) e rimuovere dalla testa (`popTesta`).
+*   **Conseguenza**: Hai creato uno Stack (LIFO), non una Coda! Gli ultimi arrivati passano davanti a tutti.
+*   **Corretto**: In una Coda, le entrate e le uscite devono essere ai lati **opposti**.
+
+### B. Coda Infinita (Loop)
+In alcuni algoritmi, se si ri-accoda un elemento appena uscito senza una condizione di stop, si crea un ciclo infinito.
+*   **Esempio**: Algoritmo BFS (Breadth First Search) sui grafi. Se non segni i nodi come "visitati", continuerai ad accodarli all'infinito.
+
+### C. Performance
+Usare un array JavaScript standard (`[]`) come coda facendo `array.shift()` (rimuovi primo) è computazionalmente costoso (O(N)) perché tutti gli elementi devono scalare di una posizione.
+*   **Soluzione**: La nostra implementazione basata su LinkedList è più efficiente per il `dequeue` (O(1)), poiché rimuovere il primo nodo non richiede di spostare gli altri.
+

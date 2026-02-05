@@ -91,3 +91,28 @@ Capovolge l'ordine dei pointer (da A->B->C a C->B->A). Molto chiesto ai colloqui
         *   Avanza gli altri: `prev = curr`, `curr = next`
     3.  Alla fine, `head = prev`.
 *   **Complessità**: O(N).
+
+---
+
+## 6. ⚠️ Errori Comuni e Troubleshooting
+
+Ecco gli errori tipici che commettono gli studenti (e i professionisti!) lavorando con le liste:
+
+### A. Perdere la Lista ("Lost Head")
+Se sovrascrivi per sbaglio il puntatore `head` senza averne salvato una copia, perdi l'accesso a tutta la lista. Il Garbage Collector cancellerà tutto.
+*   ❌ **Errore**: `head = nuovoNodo` (senza aver prima collegato il nuovo nodo al vecchio head).
+*   ✅ **Corretto**: `nuovoNodo.link = head; head = nuovoNodo;`
+
+### B. Spezzare la Catena ("Broken Chain")
+Accade spesso nell'inserimento centrale (`pushDopoNodo`). L'ordine delle operazioni è **VITALE**.
+Se devi inserire `N` tra `A` e `B`:
+*   ❌ **Errore**: `A.link = N` (Ora A punta a N, ma chi punta a B? Nessuno! Hai perso B e tutto il resto della lista).
+*   ✅ **Corretto**:
+    1.  `N.link = A.link` (Prima fai puntare N a B).
+    2.  `A.link = N` (Solo ora fai puntare A a N).
+
+### C. Accesso a Null ("Null Pointer Exception")
+Tentare di leggere `.info` o `.link` di una variabile che è diventata `null`.
+*   ❌ **Errore**: `while (tmp.info != val)` (Se `tmp` arriva alla fine ed è `null`, questo controllo esplode).
+*   ✅ **Corretto**: `while (tmp !== null && tmp.info != val)` (Controlla SEMPRE prima se il nodo esiste).
+

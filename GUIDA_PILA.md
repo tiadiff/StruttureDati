@@ -45,3 +45,18 @@ Svuota rapidamente la pila (`head = null`).
 
 ### `clone()`
 Crea una copia esatta dello stack ausiliario, permettendo di operare sui dati senza distruggere lo stack originale.
+
+---
+
+## 5. ⚠️ Errori Comuni e Troubleshooting
+
+### A. Stack Underflow
+Tentare di fare `pop()` su una pila già vuota.
+*   **Conseguenza**: Restituisce `null` o lancia un errore, a seconda dell'implementazione. Se il codice successivo si aspetta un oggetto valido, il programma andrà in crash.
+*   **Soluzione**: Controllare sempre `if (!stack.isEmpty())` prima del pop.
+
+### B. Usare lo Stack come una Lista
+Molti studenti, avendo accesso alla struttura sottostante (lista), sono tentati di inserire elementi "in mezzo" o di leggere l'elemento in fondo.
+*   **Problema**: Questo rompe il contratto LIFO. Se il tuo algoritmo ha bisogno di leggere il terzo elemento della pila, **NON** dovresti usare uno Stack, ma una Lista o un Array.
+*   **Regola d'Oro**: Se usi uno Stack, devi limitarti rigorosamente a `push`, `pop` e `peek`.
+
