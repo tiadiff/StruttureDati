@@ -1,77 +1,80 @@
 # 📗 Guida allo Studio: Lista Bidirezionale (Doubly Linked List)
 
 ## 1. Cos'è una Lista Bidirezionale?
-Una **Lista Bidirezionale** è un'evoluzione della lista semplice. Qui, ogni nodo mantiene **due riferimenti**:
+In questa struttura, ogni nodo mantiene **due riferimenti**:
 1.  **Next**: Punta al nodo successivo.
 2.  **Prev**: Punta al nodo precedente.
 
-Questo permette di attraversare la lista in entrambe le direzioni (avanti e indietro) e rende molto più facili operazioni come "rimuovi questo nodo" (se ne abbiamo già il riferimento) o "torna indietro".
-
 ---
 
-## 2. Struttura del Nodo (JavaScript)
-Ecco la definizione in `lista_bidirezionale.js`:
-
+## 2. Struttura del Nodo
 ```javascript
 class NodoBi {
     constructor(info) {
         this.info = info;
-        this.prev = null; // Puntatore indietro
-        this.next = null; // Puntatore avanti
+        this.prev = null;
+        this.next = null;
     }
 }
 ```
 
 ---
 
-## 3. Analisi Algoritmica delle Operazioni
+## 3. Traversamento Avanzato
 
-### A. Inserimento in Testa (PushTesta)
-*   **Complessità**: O(1).
-*   **Logica**:
-    1.  Creo nodo `N`.
-    2.  `N.next = head`.
-    3.  Se la lista non è vuota (`head != null`), `head.prev = N`. <br> *Questo passo è fondamentale: il vecchio primo deve sapere che ora ha qualcuno davanti!*
-    4.  `head = N`.
+La potenza della lista bidirezionale sta nel poterla percorrere in entrambi i sensi.
 
-### B. Inserimento in Coda (PushCoda)
-*   **Complessità**: O(N) (senza puntatore `tail`) o O(1) (con puntatore `tail`).
-*   **Logica**:
-    1.  Scorro fino all'ultimo nodo `L`.
-    2.  Collego in avanti: `L.next = N`.
-    3.  Collego all'indietro: `N.prev = L`. <br> *Ora N sa chi c'è prima di lui.*
+### Scorrimento in Avanti (Forward)
+Identico alla lista unidirezionale, usando `next`.
 
-### C. Inserimento "Prima" di un Nodo (PushPrimaNodo)
-Vogliamo inserire `N` prima di un nodo `T`. Immaginiamo che prima di `T` ci sia `P`.
-**Situazione**: `[P] <-> [T]`
-**Obiettivo**: `[P] <-> [N] <-> [T]`
+```javascript
+let tmp = this.head;
+while(tmp !== null) {
+    console.log(tmp.info);
+    tmp = tmp.next;
+}
+```
 
-**Logica**:
-1.  Identifichiamo `P` come `T.prev`.
-2.  Collego N:
-    *   `N.next = T`
-    *   `N.prev = P`
-3.  Aggiorno i vicini:
-    *   `T.prev = N`
-    *   Se `P` esiste, `P.next = N`.
-    *   Se `P` non esiste (`T` era la testa), aggiorno `head = N`.
+### Scorrimento all'Indietro (Backward)
+Possiamo partire dall'ultimo nodo (se abbiamo un puntatore `tail`) o scorrere fino in fondo e poi tornare indietro usando `prev`.
 
-### D. Rimozione Centrale (Pop)
-Rimuovere un nodo `X` che sta tra `A` e `B`.
-`[A] <-> [X] <-> [B]`
+```javascript
+// 1. Vai in fondo
+let tmp = this.head;
+while(tmp.next !== null) tmp = tmp.next;
 
-**Logica**:
-1.  Bypass in avanti: `A.next = B`.
-2.  Bypass all'indietro: `B.prev = A`.
-3.  `X` è ora isolato e viene eliminato.
+// 2. Torna indietro
+while(tmp !== null) {
+    console.log(tmp.info); // Stampa dall'ultimo al primo
+    tmp = tmp.prev;        // Passo indietro
+}
+```
 
 ---
 
-## 4. Confronto: Unidirezionale vs Bidirezionale
+## 4. Operazioni e Puntatori
 
-| Caratteristica | Unidirezionale | Bidirezionale |
-| :--- | :--- | :--- |
-| Memoria per nodo | Minore (1 puntatore) | Maggiore (2 puntatori) |
-| Scorrimento | Solo Avanti | Avanti e Indietro |
-| Rimozione nodo noto | Difficile (serve il precedente) | Facile (conosciamo già prev) |
-| Complessità Codice | Semplice | Più incline a errori (doppi link da gestire) |
+### A. Inserimento in Testa
+`N.next = head; head.prev = N; head = N;`
+
+### B. Inserimento "Prima" di T
+`P = T.prev;`
+`N.next = T; N.prev = P;`
+`T.prev = N; P.next = N;`
+
+---
+
+## 5. Altre Funzioni Utili
+
+### `findLast()`: Trova l'ultimo
+Restituisce l'ultimo nodo. Utile se non manteniamo una variabile `tail` costante.
+*   **Algoritmo**: `while (tmp.next !== null) tmp = tmp.next; return tmp;`
+
+### `delete(valore)`: Rimozione Specifica
+Grazie al doppio puntatore, se abbiamo il riferimento al nodo `X` da cancellare, la rimozione è **O(1)** (immediata), perché non dobbiamo cercare il precedente partendo dalla testa (come nella lista singola), ma lo conosciamo già (`X.prev`).
+
+### `printBackward()`: Stampa Inversa
+Visualizza la lista al contrario senza modificarla (a differenza del `reverse` della lista singola che è distruttivo).
+
+### `toDoublyArray()`: Esportazione
+Converte la struttura puntata in un semplice Array JavaScript `[]` per facilitare il debug o l'uso con altre librerie.

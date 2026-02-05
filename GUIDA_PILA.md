@@ -1,59 +1,47 @@
 # 📗 Guida allo Studio: La Pila (Stack)
 
-## 1. Il Concetto di Stack
-Lo **Stack** è una struttura dati astratta che segue rigorosamente il principio **LIFO** (Last In, First Out).
-*   L'ultimo elemento inserito è il primo ad essere rimosso.
-*   Pensate a una pila di piatti: metti un piatto sopra l'altro. Per prendere quello in fondo, devi togliere tutti quelli sopra.
+## 1. Il Concetto LIFO
+**Stack** = Last In, First Out.
+Solo l'elemento in cima è accessibile.
 
 ---
 
 ## 2. Le Operazioni Fondamentali
-
-In uno Stack puro, esistono solo due operazioni di modifica:
-
-### A. PUSH (Spingi)
-Inserisce un elemento **in cima** alla pila.
-*   Corrisponde a: `pushTesta` in una lista concatenata.
-*   Non è permesso inserire "in mezzo" o "in fondo".
-
-### B. POP (Salta fuori)
-Rimuove e restituisce l'elemento **in cima**.
-*   Corrisponde a: `popTesta` in una lista concatenata.
-*   Non è permesso rimuovere un elemento dal fondo senza svuotare la pila.
-
-### C. PEEK (Sbircia)
-Guarda l'elemento in cima senza rimuoverlo. Utile per controllare cosa c'è "sopra" prima di agire.
+*   **PUSH**: Inserisce in cima (Testa). O(1).
+*   **POP**: Rimuove dalla cima (Testa). O(1).
+*   **PEEK**: Legge la cima senza rimuovere. O(1).
 
 ---
 
-## 3. Implementazione nel Codice (`strutture_derivate.js`)
+## 3. Ciclare uno Stack: Si può fare?
 
-Nel nostro progetto, abbiamo implementato la Pila usando una **Lista Unidirezionale** come base. Questo è un esempio perfetto di **Incapsulamento** o composizione.
+### Concettualmente: NO
+Nella teoria pura degli Stack, **NON** dovresti poter guardare cosa c'è sotto la cima senza rimuovere (fare `pop`) gli elementi sopra. Iterare uno stack dall'alto in basso è un'operazione che "viola" l'astrazione, oppure richiede di svuotare lo stack.
 
+### Praticamente: SI (In fase di Debug)
+Poiché la nostra implementazione `Pila` è un wrapper attorno a una `Lista`, possiamo "barare" e usare il metodo `print()` della lista interna per vedere tutto il contenuto.
+
+**Pattern di iterazione corretto (distruttivo):**
 ```javascript
-class Pila {
-    constructor() {
-        this.list = new Lista(); // La 'memoria' dello stack
-    }
-
-    push(info) {
-        // Usiamo SOLO pushTesta per garantire LIFO
-        this.list.pushTesta(info);
-    }
-
-    pop() {
-        // Usiamo SOLO popTesta
-        return this.list.popTesta();
-    }
+while (!stack.isEmpty()) {
+    let dato = stack.pop();
+    processa(dato);
 }
+// Ora lo stack è vuoto!
 ```
 
-Perché usiamo la lista? Perché l'inserimento e la rimozione in testa sono operazioni **O(1)** (immediate), indipendentemente da quanto è grande la pila. Se usassimo un array e facessimo `unshift` (inserire all'inizio), dovremmo spostare tutti gli indici ogni volta (O(N)).
-
 ---
 
-## 4. Applicazioni Reali
-Dove si usano gli Stack?
-*   **Undo/Redo (Annulla/Ripeti)** negli editor di testo: ogni azione viene messa in uno stack. CTRL+Z fa il "pop" dell'ultima azione.
-*   **Chiamate a Funzione (Call Stack)**: Quando un programma chiama una funzione, salva lo stato attuale nello stack. Quando la funzione finisce, fa "pop" per tornare dove era rimasto.
-*   **Analisi Sintattica**: Controllare parentesi bilanciate `(( ))` nel codice.
+## 4. Altre Funzioni Tipiche
+
+### `isEmpty()`
+Restituisce `true` se lo stack non ha elementi. Fondamentale per evitare errori di *Stack Underflow* (tentare di fare `pop` su una pila vuota).
+
+### `size()`
+Restituisce il numero di elementi. Spesso mantenuto in una variabile contatore aggiornata a ogni push/pop per evitare di contare i nodi ogni volta (O(1) vs O(N)).
+
+### `clear()`
+Svuota rapidamente la pila (`head = null`).
+
+### `clone()`
+Crea una copia esatta dello stack ausiliario, permettendo di operare sui dati senza distruggere lo stack originale.

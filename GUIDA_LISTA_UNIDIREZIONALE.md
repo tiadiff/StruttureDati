@@ -24,50 +24,70 @@ class Nodo {
 
 ---
 
-## 3. Analisi Algoritmica delle Operazioni
+## 3. Traversamento: Come Ciclare la Lista
 
-### A. Inserimento in Testa (PushTesta)
-Vogliamo aggiungere un nuovo elemento `N` *prima* dell'attuale primo elemento.
-*   **Complessità**: O(1) (Tempo costante).
-*   **Logica**:
-    1.  Creiamo `N`.
-    2.  Diciamo a `N` di puntare a chi è attualmente in testa: `N.link = head`.
-    3.  Aggiorniamo la testa del sistema: `head = N`.
+Poiché non abbiamo indici numerici come negli array (`arr[i]`), l'unico modo per visitare gli elementi è **scorrere i puntatori** sequenzialmente.
 
-### B. Inserimento in Coda (PushCoda)
-Vogliamo aggiungere un elemento `N` alla fine.
-*   **Complessità**: O(N) (Tempo lineare, dobbiamo scorrere tutti gli N elementi).
-*   **Logica**:
-    1.  Se la lista è vuota, `N` diventa la testa.
-    2.  Altrimenti, usiamo un puntatore `tmp` che parte da `head`.
-    3.  Facciamo avanzare `tmp` finché `tmp.link` non è `null`.
-    4.  Arrivati all'ultimo nodo, lo colleghiamo al nuovo: `tmp.link = N`.
+### Il Ciclo `While` Standard
+Si parte dalla testa e ci si sposta finché non si cade nel `null` (fine lista).
 
-### C. Inserimento dopo un Nodo specifico (PushDopoNodo)
-Vogliamo inserire `N` tra due nodi esistenti, `A` (target) e `B` (il successivo di A).
-**Situazione Iniziale**: `[A] -> [B]`
-**Obiettivo**: `[A] -> [N] -> [B]`
+```javascript
+let corrente = this.head; // Partiamo dall'inizio
 
-**Algoritmo Critico**:
-1.  Scorriamo la lista per trovare `A`.
-2.  **Passo 1**: `N.link = A.link` (Colleghiamo N verso B).
-3.  **Passo 2**: `A.link = N` (Colleghiamo A verso N).
-> ⚠️ **Attenzione**: Se invertissimo i passi, scrivendo prima `A.link = N`, perderemmo il riferimento a `B` e spezzeremmo la lista!
+while (corrente !== null) {
+    // Eseguiamo un'azione sul nodo corrente
+    console.log(corrente.info); 
+    
+    // Avanziamo al prossimo nodo
+    corrente = corrente.link; 
+}
+```
 
-### D. Rimozione dalla Testa (PopTesta)
-Eliminiamo il primo elemento.
-*   **Complessità**: O(1).
-*   **Logica**:
-    1.  Salviamo un riferimento al nodo da eliminare (per restituirne il valore).
-    2.  Spostiamo la testa in avanti: `head = head.link`.
-    3.  Il vecchio nodo viene "sganciato" e rimosso dal Garbage Collector.
+### Errori Comuni nei Cicli
+*   **Dimenticare l'avanzamento**: Se ometti `corrente = corrente.link`, crei un ciclo infinito che blocca il browser.
+*   **Accedere a proprietà di null**: Se fai `corrente.info` quando `corrente` è diventato `null` (cioè sei fuori dalla lista), otterrai un errore.
 
 ---
 
-## 4. Vantaggi e Svantaggi
+## 4. Analisi Algoritmica delle Operazioni
 
-| Vantaggi | Svantaggi |
-| :--- | :--- |
-| Dimensione dinamica (non serve fissare un limite all'inizio). | Accesso lento agli elementi (no accesso diretto come `arr[5]`, bisogna scorrere). |
-| Inserimento in testa immediato O(1). | Uso di memoria extra per i puntatori. |
-| Non richiede memoria contigua. | Scorrimento solo in avanti (non si può tornare indietro). |
+### A. Inserimento in Testa (PushTesta)
+*   **Complessità**: O(1).
+*   **Logica**: `N.link = head; head = N;`
+
+### B. Inserimento in Coda (PushCoda)
+*   **Complessità**: O(N).
+*   **Logica**: Scorrere con un ciclo fino all'ultimo nodo (`tmp.link === null`) e collegarlo (`tmp.link = N`).
+
+### C. Inserimento dopo un Nodo (PushDopoNodo)
+Vogliamo inserire `N` tra `A` e `B`.
+1.  Scorriamo per trovare `A`.
+2.  `N.link = A.link` (Colleghiamo N verso B).
+3.  `A.link = N` (Colleghiamo A verso N).
+
+---
+
+## 5. Altre Funzioni Utili
+
+Ecco altre operazioni tipiche che si implementano nelle liste:
+
+### `search(valore)`: Ricerca Elemento
+Restituisce `true` se l'elemento esiste, `false` altrimenti.
+*   **Algoritmo**: Si usa il ciclo standard di traversamento. Se `corrente.info === valore`, abbiamo trovato. Se il ciclo finisce, non c'è.
+*   **Complessità**: O(N).
+
+### `size()`: Conteggio Nodi
+Restituisce il numero totale di nodi.
+*   **Algoritmo**: Inizializza un contatore `count = 0`. Nel ciclo `while`, incrementa `count++` ad ogni passo.
+*   **Complessità**: O(N).
+
+### `reverse()`: Inversione Lista
+Capovolge l'ordine dei pointer (da A->B->C a C->B->A). Molto chiesto ai colloqui tecnici.
+*   **Algoritmo**: Servono 3 puntatori: `prev`, `curr`, `next`.
+    1.  `prev = null`, `curr = head`.
+    2.  Nel ciclo:
+        *   Salva il prossimo: `next = curr.link`
+        *   Inverti il puntatore: `curr.link = prev`
+        *   Avanza gli altri: `prev = curr`, `curr = next`
+    3.  Alla fine, `head = prev`.
+*   **Complessità**: O(N).
