@@ -12,7 +12,7 @@ Poiché il progetto utilizza solo HTML, CSS e JavaScript standard (senza framewo
 
 2.  Apri il file **`index.html`** con un qualsiasi browser.
 
-3.  Non è necessario alcun server locale (Node.js, Apache, ecc.).
+3.  Non è necessario alcun server locale (MAMP, Node.js, Apache ecc.).
 
 ---
 
